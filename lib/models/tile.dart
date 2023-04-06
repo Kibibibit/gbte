@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 
+import 'dart:typed_data';
 import 'package:gbte/models/saveable.dart';
 
 class Tile extends Saveable {
@@ -19,6 +19,7 @@ class Tile extends Saveable {
   int get(int x, int y) {
     return _data[_index(x, y)];
   }
+
 
   void set(int x, int y, int value) {
     assert(value >= 0 && value < 4, "Pixel must be 0-3");
