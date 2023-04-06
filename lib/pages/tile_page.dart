@@ -8,7 +8,11 @@ import 'package:gbte/widgets/tile_display.dart';
 import 'package:gbte/widgets/tile_select.dart';
 
 class TilePage extends StatefulWidget {
-  const TilePage({super.key});
+
+  final int tileBank;
+  final int paletteBank;
+
+  const TilePage({super.key, required this.tileBank, required this.paletteBank});
 
   @override
   State<TilePage> createState() => _TilePageState();
@@ -23,7 +27,7 @@ class _TilePageState extends State<TilePage> {
   @override
   void initState() {
     super.initState();
-    selectedTile = 0;
+    selectedTile = widget.tileBank*256;
     primaryColor = 2;
     secondaryColor = 0;
     selectedPalette = Globals.tilePalettes[selectedTile];
@@ -59,6 +63,7 @@ class _TilePageState extends State<TilePage> {
             edit: true,
           ),
           SizedBox(width:250, child: PaletteSelect(
+            paletteBank: widget.paletteBank,
             selectedPalette: selectedPalette,
             onSelect: (p)=>selectPalette(p),
           )),
@@ -68,6 +73,7 @@ class _TilePageState extends State<TilePage> {
             child: TileSelect(
               onSelect: (t) => selectTile(t),
               selectedTile: selectedTile,
+              tileBank: widget.tileBank,
             ),
           ),
         ],
