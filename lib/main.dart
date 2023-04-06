@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/models/gbc_color.dart';
 import 'package:gbte/pages/tile_page.dart';
 
 void main() {
@@ -46,6 +47,9 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
     Globals.tiles[0].set(0, 0, 1);
     Globals.tiles[0].set(1, 0, 2);
     Globals.tiles[0].set(2, 0, 3);
+
+    Globals.palettes[1].colors[0] = GBCColor(r: 31, g: 0, b: 0);
+    Globals.palettes[8].colors[0] = GBCColor(r:0, g:15, b:31);
 
     Uint8List save = Globals.tiles[0].save();
 

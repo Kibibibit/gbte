@@ -1,23 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/palette.dart';
 import 'package:gbte/models/tile.dart';
 
 class TileDisplay extends StatefulWidget {
   final List<int> tiles;
-  final List<int> palettes;
 
   final int metatileSize;
   final int primaryColor;
   final int secondaryColor;
 
+  final bool edit;
+
   const TileDisplay({
     super.key,
     required this.tiles,
     required this.metatileSize,
-    required this.palettes,
     required this.primaryColor,
     required this.secondaryColor,
+    this.edit = false,
   });
 
   @override
@@ -25,14 +29,38 @@ class TileDisplay extends StatefulWidget {
 }
 
 class _TileDisplayState extends State<TileDisplay> {
+  double _tileSize(double size) => size / (Tile.size * widget.metatileSize);
+
   bool repaint = false;
 
-  double _tileSize(double size) => size / (Tile.size * widget.metatileSize);
+  late StreamSubscription<int> tileStream;
+
+  @override
+  void initState() {
+    
+    super.initState();
+    tileStream = Events.tileEditStream.stream.listen((tile) {
+      if (widget.tiles.contains(tile)) {
+        setState(() {
+          repaint = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    tileStream.cancel();
+  }
 
   int _tilePos(double p, BuildContext context) =>
       (p / (_tileSize(context.size?.width ?? 0))).floor();
 
   void onEvent(PointerEvent event, BuildContext context) {
+    if (!widget.edit) {
+      return;
+    }
     if ((context.size?.contains(event.localPosition)) ?? false) {
       int x = _tilePos(event.localPosition.dx, context);
       int y = _tilePos(event.localPosition.dy, context);
@@ -43,9 +71,7 @@ class _TileDisplayState extends State<TileDisplay> {
       int sY = y % Tile.size;
       Globals.tiles[widget.tiles[tileIndex]].set(sX, sY,
           event.buttons == 1 ? widget.primaryColor : widget.secondaryColor);
-      setState(() {
-        repaint = true;
-      });
+      Events.updateTile(widget.tiles[tileIndex]);
     }
   }
 
@@ -63,11 +89,10 @@ class _TileDisplayState extends State<TileDisplay> {
               onPointerMove: (event) => onEvent(event, context),
               child: CustomPaint(
                 painter: TilePainter(
-                  tiles: widget.tiles,
-                  metatileSize: widget.metatileSize,
-                  palettes: widget.palettes,
-                  repaint: repaint,
-                ),
+                    edit: widget.edit,
+                    tiles: widget.tiles,
+                    metatileSize: widget.metatileSize,
+                    repaint: repaint),
               ),
             ),
           );
@@ -79,14 +104,14 @@ class _TileDisplayState extends State<TileDisplay> {
 
 class TilePainter extends CustomPainter {
   final List<int> tiles;
-  final List<int> palettes;
   final int metatileSize;
+  final bool edit;
   final bool repaint;
 
   TilePainter({
     required this.tiles,
     required this.metatileSize,
-    required this.palettes,
+    required this.edit,
     required this.repaint,
   });
 
@@ -98,8 +123,8 @@ class TilePainter extends CustomPainter {
     int i = 0;
     for (int tileY = 0; tileY < metatileSize; tileY++) {
       for (int tileX = 0; tileX < metatileSize; tileX++) {
-        paintTile(tileX * tileSize, tileY * tileSize, tiles[i], palettes[i],
-            tileSize, painter, canvas, size);
+        paintTile(tileX * tileSize, tileY * tileSize, tiles[i],
+            Globals.tilePalettes[tiles[i]], tileSize, painter, canvas, size);
         i++;
       }
     }
@@ -118,10 +143,11 @@ class TilePainter extends CustomPainter {
         painter.color = palette.colors[tile.get(x, y)].toColor();
         painter.style = PaintingStyle.fill;
         canvas.drawRect(rect, painter);
-
-        painter.style = PaintingStyle.stroke;
-        painter.color = Colors.black;
-        canvas.drawRect(rect, painter);
+        if (edit) {
+          painter.style = PaintingStyle.stroke;
+          painter.color = Colors.black;
+          canvas.drawRect(rect, painter);
+        }
       }
     }
     painter.strokeWidth = 3.0;

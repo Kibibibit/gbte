@@ -30,7 +30,6 @@ class _PaletteButton extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1,
       child: Container(
-        width: 50,
         decoration: BoxDecoration(
           border: Border.all(),
           color: Globals.palettes[palette].colors[index].toColor(),

@@ -18,5 +18,7 @@ class Globals {
 
   static List<Palette> palettes = List.generate(16, (_) => Palette.defaultPalette());
 
+  static List<int> tilePalettes = List.generate(256*3, (index) => 0);
+
 
 }
