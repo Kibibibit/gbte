@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/pages/palette_page.dart';
 import 'package:gbte/pages/root_page.dart';
 import 'package:gbte/pages/tile_page.dart';
 import 'package:gbte/widgets/palette_select.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
             ),
             "Shared Tiles":
                 TilePage(tileBank: 1, paletteBank: PaletteSelect.bothBanks),
+            "Palettes": PalettePage(),
           },
         ));
   }

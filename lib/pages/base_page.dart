@@ -9,6 +9,9 @@ class BasePage extends StatelessWidget {
   Widget build(BuildContext context) {
 
 
-    return child;
+    return Padding(
+      padding: const EdgeInsets.only(top:8.0),
+      child: child,
+    );
   }
 }
