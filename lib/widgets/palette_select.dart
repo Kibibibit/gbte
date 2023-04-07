@@ -1,55 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/palette_bank.dart';
 import 'package:gbte/widgets/palette_display.dart';
 
 class PaletteSelect extends StatelessWidget {
+
   final int selectedPalette;
-  final void Function(int) onSelect;
   final int paletteBank;
 
-  static const int spriteBank = 0;
-  static const int backgroundBank = 1;
-  static const int bothBanks = 2;
+  final void Function(int)  onChange;
 
-  const PaletteSelect(
-      {super.key,
-      required this.selectedPalette,
-      required this.onSelect,
-      required this.paletteBank});
-
-  int _index(int i) {
-    if (paletteBank == bothBanks) {
-      return i % 2 == 0 ? (i / 2).floor() : ((i - 1) / 2).floor() + 8;
+  void _onChange(int? p) {
+    if (p != null) {
+      onChange(p);
     }
-    return (8*paletteBank)+ i;
   }
+
+
+  const PaletteSelect({super.key, required this.selectedPalette, required this.paletteBank, required this.onChange});
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      childAspectRatio: 4,
-      crossAxisCount: paletteBank == bothBanks ? 2 : 1,
-      mainAxisSpacing: 5,
-      crossAxisSpacing: 5,
-      children: List.generate(
-        paletteBank == bothBanks ? 16 : 8,
-        (index) => Material(
-          color: selectedPalette == _index(index) ? Colors.grey : Colors.white,
-          child: InkWell(
-            onTap: () => onSelect(_index(index)),
-            child: Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(border: Border.all()),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(width: 20, child: Text('${_index(index)}')),
-                    PaletteDisplay(palette: _index(index)),
-                  ],
-                )),
-          ),
-        ),
-      ),
-    );
+
+    List<DropdownMenuItem<int>> items;
+
+     if (paletteBank == PaletteBank.shared) {
+      items = List.generate(16, (index) => DropdownMenuItem(value: index,child: PaletteDisplay(palette: index)));
+    } else {
+      items = List.generate(8, (index) =>DropdownMenuItem(value: index+(paletteBank*8),child: PaletteDisplay(palette: index+(paletteBank*8))));
+    }
+    
+    return DropdownButtonHideUnderline(child: DropdownButton(items: items, onChanged: _onChange, value:selectedPalette));
+
   }
+
+
+
+  
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/constants.dart';
+import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/pages/base_page.dart';
@@ -8,11 +10,8 @@ import 'package:gbte/widgets/tile_display.dart';
 import 'package:gbte/widgets/tile_select.dart';
 
 class TilePage extends StatefulWidget {
-  final int tileBank;
-  final int paletteBank;
-
   const TilePage(
-      {super.key, required this.tileBank, required this.paletteBank});
+      {super.key});
 
   @override
   State<TilePage> createState() => _TilePageState();
@@ -23,11 +22,21 @@ class _TilePageState extends State<TilePage> {
   late int selectedPalette;
   late int primaryColor;
   late int secondaryColor;
+  int tileBank = TileBank.sprite;
+
+  void onBankSelect(int? bank) {
+    if (bank != null) {
+      setState(() {
+        tileBank = bank;
+      });
+      selectTile(Constants.tileBankSize*bank);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    selectedTile = widget.tileBank * 256;
+    selectedTile = tileBank * Constants.tileBankSize;
     primaryColor = 2;
     secondaryColor = 0;
     selectedPalette = Globals.tilePalettes[selectedTile];
@@ -79,14 +88,10 @@ class _TilePageState extends State<TilePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
-                  width:
-                      widget.paletteBank == PaletteSelect.bothBanks ? 250 : 150,
-                  child: PaletteSelect(
-                    paletteBank: widget.paletteBank,
-                    selectedPalette: selectedPalette,
-                    onSelect: (p) => selectPalette(p),
-                  ),
+                PaletteSelect(
+                  paletteBank:  TileBank.toPaletteBank(tileBank),
+                  selectedPalette: selectedPalette,
+                  onChange: (p) => selectPalette(p),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 10)),
                 SizedBox(
@@ -114,7 +119,8 @@ class _TilePageState extends State<TilePage> {
             child: TileSelect(
               onSelect: (t) => selectTile(t),
               selectedTile: selectedTile,
-              tileBank: widget.tileBank,
+              tileBank: tileBank,
+              onBankSelect: onBankSelect,
             ),
           ),
         ],

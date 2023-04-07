@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gbte/pages/palette_page.dart';
 import 'package:gbte/pages/root_page.dart';
 import 'package:gbte/pages/tile_page.dart';
-import 'package:gbte/widgets/palette_select.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,16 +20,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const RootPage(
           pages: {
-            "Sprite Tiles": TilePage(
-              tileBank: 0,
-              paletteBank: PaletteSelect.spriteBank,
-            ),
-            "Background Tiles": TilePage(
-              tileBank: 2,
-              paletteBank: PaletteSelect.backgroundBank,
-            ),
-            "Shared Tiles":
-                TilePage(tileBank: 1, paletteBank: PaletteSelect.bothBanks),
+            "Tiles": TilePage(),
             "Palettes": PalettePage(),
           },
         ));

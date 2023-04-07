@@ -8,13 +8,16 @@ class PaletteDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _PaletteButton(palette: palette, index: 0),
-        _PaletteButton(palette: palette, index: 1),
-        _PaletteButton(palette: palette, index: 2),
-        _PaletteButton(palette: palette, index: 3)
-      ],
+    return AspectRatio(
+      aspectRatio:4,
+      child: Row(
+        children: [
+          _PaletteButton(palette: palette, index: 0),
+          _PaletteButton(palette: palette, index: 1),
+          _PaletteButton(palette: palette, index: 2),
+          _PaletteButton(palette: palette, index: 3)
+        ],
+      ),
     );
   }
 }

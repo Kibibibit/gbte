@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/palette_bank.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/map_range.dart';
 import 'package:gbte/pages/base_page.dart';
@@ -130,13 +131,10 @@ class _PalettePageState extends State<PalettePage> {
             ),
           ],
         ),
-        SizedBox(
-          width: 260,
-          child: PaletteSelect(
-            selectedPalette: selectedPalette,
-            onSelect: onSelectPalette,
-            paletteBank: PaletteSelect.bothBanks,
-          ),
+        PaletteSelect(
+          selectedPalette: selectedPalette,
+          onChange: onSelectPalette,
+          paletteBank: PaletteBank.shared,
         ),
       ],
     ));
