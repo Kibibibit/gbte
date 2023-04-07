@@ -8,17 +8,15 @@ class TileSelect extends StatelessWidget {
   final int tileBank;
   final int selectedTile;
   final void Function(int?) onBankSelect;
-  const TileSelect(
-      {super.key,
-      required this.onSelect,
-      required this.selectedTile,
-      required this.tileBank,
-      required this.onBankSelect,
-      
-      });
+  const TileSelect({
+    super.key,
+    required this.onSelect,
+    required this.selectedTile,
+    required this.tileBank,
+    required this.onBankSelect,
+  });
 
   int _index(int i) => (tileBank * Constants.tileBankSize) + i;
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +26,16 @@ class TileSelect extends StatelessWidget {
           items: const [
             DropdownMenuItem(
               value: TileBank.sprite,
-              child: Text("Sprite"),
-            ),
-            DropdownMenuItem(
-              value: TileBank.background,
-              child: Text("Background"),
+              child: Text("Sprite (0-255)"),
             ),
             DropdownMenuItem(
               value: TileBank.shared,
-              child: Text("Shared"),
-            )
+              child: Text("Shared (256-511)"),
+            ),
+            DropdownMenuItem(
+              value: TileBank.background,
+              child: Text("Background (512-767)"),
+            ),
           ],
           value: tileBank,
           onChanged: onBankSelect,
@@ -53,6 +51,7 @@ class TileSelect extends StatelessWidget {
               child: InkWell(
                 onTap: () => onSelect(_index(index)),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
@@ -65,7 +64,7 @@ class TileSelect extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: 100,
+                      height: 80,
                       child: TileDisplay(
                         tiles: [_index(index)],
                         metatileSize: 1,

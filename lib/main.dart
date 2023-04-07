@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gbte/pages/palette_page.dart';
 import 'package:gbte/pages/root_page.dart';
 import 'package:gbte/pages/tile_page.dart';
 
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
         home: const RootPage(
           pages: {
             "Tiles": TilePage(),
-            "Palettes": PalettePage(),
           },
         ));
   }
