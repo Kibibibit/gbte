@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:gbte/globals/events.dart';
+import 'package:gbte/globals/fileio.dart';
 
 class RootPage extends StatefulWidget {
   final Map<String, Widget> pages;
@@ -11,17 +15,44 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
   late TabController _tabController;
+  String? filename;
+  late StreamSubscription<String> _loadStreamSubscription;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: widget.pages.length, vsync: this);
+    _loadStreamSubscription = Events.loadStream.stream.listen((file) {
+      setState(() {
+        filename = file;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _loadStreamSubscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(filename ?? "Unsaved File"),
+        leadingWidth: 200,
+        leading: Row(
+          children: [
+            IconButton(
+                onPressed: () => FileIO.save(), icon: const Icon(Icons.save)),
+            IconButton(
+                onPressed: () => FileIO.saveAs(),
+                icon: const Icon(Icons.save_as)),
+            IconButton(
+                onPressed: () => FileIO.load(),
+                icon: const Icon(Icons.open_in_new))
+          ],
+        ),
         toolbarHeight: 40,
         backgroundColor: Colors.blue,
         bottom: PreferredSize(
@@ -32,9 +63,11 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
               controller: _tabController,
               tabs: widget.pages.keys
                   .map((tabTitle) => Tab(
-                    height: 40,
-                        child: Text(tabTitle, style:const TextStyle(color: Colors.white),),
-                        
+                        height: 40,
+                        child: Text(
+                          tabTitle,
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ))
                   .toList()),
         ),

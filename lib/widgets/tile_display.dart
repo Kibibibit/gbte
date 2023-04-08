@@ -34,6 +34,7 @@ class _TileDisplayState extends State<TileDisplay> {
   bool repaint = false;
 
   late StreamSubscription<int> tileStream;
+  late StreamSubscription<String> loadStream;
 
   @override
   void initState() {
@@ -46,12 +47,18 @@ class _TileDisplayState extends State<TileDisplay> {
         });
       }
     });
+    loadStream = Events.loadStream.stream.listen((_){
+      setState(() {
+        repaint = true;
+      });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     tileStream.cancel();
+    loadStream.cancel();
   }
 
   int _tilePos(double p, BuildContext context) =>

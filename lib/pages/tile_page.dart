@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
@@ -25,6 +27,8 @@ class _TilePageState extends State<TilePage> {
   late int blue;
   int tileBank = TileBank.sprite;
 
+  late StreamSubscription<String> loadStream;
+
   void onBankSelect(int? bank) {
     if (bank != null) {
       if (bank != tileBank) {
@@ -47,7 +51,14 @@ class _TilePageState extends State<TilePage> {
     primaryColor = 2;
     secondaryColor = 0;
     selectedPalette = Globals.tilePalettes[selectedTile];
+    loadStream = Events.loadStream.stream.listen((_) => loadColors());
     loadColors();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    loadStream.cancel();
   }
 
   void loadColors() {

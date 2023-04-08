@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/models/palette.dart';
 import 'package:gbte/models/tile.dart';
@@ -23,5 +26,6 @@ class Globals {
 
   static List<String> paletteNames = List.generate(Constants.paletteCount, (index) => index < Constants.paletteBankSize ? "SPR $index" : "BKG ${index-8}");
 
+  static File? saveLocation;
 
 }
