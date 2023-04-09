@@ -20,6 +20,8 @@ abstract class FileIO {
     }
     saveLocation.createSync();
     saveLocation.writeAsBytesSync(createSaveData());
+    Globals.saved = true;
+
   }
 
   static Future<File?> _getSaveAsLocation() async {
@@ -54,7 +56,7 @@ abstract class FileIO {
 
     if (canSave) {
       FileIO._save(saveLocation);
-      FileIO._triggerLoadStream(saveLocation);
+      FileIO.triggerLoadStream(saveLocation);
       Globals.saveLocation = saveLocation;
     }
   }
@@ -63,7 +65,7 @@ abstract class FileIO {
     if (Globals.saveLocation != null) {
       if (Globals.saveLocation!.existsSync()) {
         FileIO._save(Globals.saveLocation!);
-        FileIO._triggerLoadStream(Globals.saveLocation!);
+        FileIO.triggerLoadStream(Globals.saveLocation!);
       } else {
         bool canSave = false;
         if (context.mounted) {
@@ -75,6 +77,7 @@ abstract class FileIO {
         if (canSave) {
           if (context.mounted) {
             FileIO._save(Globals.saveLocation!);
+            FileIO.triggerLoadStream(Globals.saveLocation!);
           }
         }
       }
@@ -83,7 +86,7 @@ abstract class FileIO {
     }
   }
 
-  static void _triggerLoadStream(File file) {
+  static void triggerLoadStream(File file) {
     String path = file.path.replaceAll("\\", "/");
     RegExp reg = RegExp(r"[/](.*).gbt");
     path = reg.firstMatch(path)?.group(1) ?? "";
@@ -97,6 +100,7 @@ abstract class FileIO {
     if (result != null) {
       File file = File(result.files.single.path!);
       if (file.existsSync()) {
+        Globals.saveLocation = file;
         List<int> data = file.readAsBytesSync().toList();
         List<int> object = [];
         int objectSize = 0;
@@ -123,7 +127,9 @@ abstract class FileIO {
             }
           }
         }
-        _triggerLoadStream(file);
+        Globals.saved = true;
+        triggerLoadStream(file);
+        
       }
     }
   }

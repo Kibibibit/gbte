@@ -44,7 +44,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(filename ?? "Unsaved File"),
+        title: Text("${filename ?? 'Unsaved File'}${Globals.saved ? '' : '*'}"),
         leadingWidth: 250,
         leading: Row(
           children: [

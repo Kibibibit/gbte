@@ -21,6 +21,7 @@ class Globals {
   static List<int> tilePalettes = List.generate(Constants.tileCount, (index) => index < Constants.tileBankSize*2 ? 0 : 8);
   static List<String> paletteNames = List.generate(Constants.paletteCount, (index) => index < Constants.paletteBankSize ? "SPR $index" : "BKG ${index-8}");
   static File? saveLocation;
+  static bool saved = false;
 
 
   static void newFile() {
