@@ -44,13 +44,16 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
         leading: Row(
           children: [
             IconButton(
-                onPressed: () => FileIO.save(), icon: const Icon(Icons.save)),
+              onPressed: () => FileIO.saveFile(context),
+              icon: const Icon(Icons.save),
+            ),
             IconButton(
-                onPressed: () => FileIO.saveAs(),
+                onPressed: () => FileIO.saveAsFile(context),
                 icon: const Icon(Icons.save_as)),
             IconButton(
-                onPressed: () => FileIO.load(),
-                icon: const Icon(Icons.open_in_new))
+              onPressed: () => FileIO.load(),
+              icon: const Icon(Icons.open_in_new),
+            ),
           ],
         ),
         toolbarHeight: 40,

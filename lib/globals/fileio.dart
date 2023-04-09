@@ -2,30 +2,27 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/palette.dart';
 import 'package:gbte/models/saveable.dart';
 import 'package:gbte/models/tile.dart';
+import 'package:gbte/widgets/file_deleted_dialog.dart';
+import 'package:gbte/widgets/overwrite_file_dialog.dart';
 
 abstract class FileIO {
   static const List<String> _types = ["gbt"];
 
-  static void save() async {
-    if (Globals.saveLocation != null) {
-      if (Globals.saveLocation!.existsSync()) {
-        Globals.saveLocation!.deleteSync();
-        Globals.saveLocation!.createSync();
-        Globals.saveLocation!.writeAsBytesSync(createSaveData());
-      } else {
-        saveAs();
-      }
-    } else {
-      saveAs();
+  static void _save(File saveLocation) async {
+    if (saveLocation.existsSync()) {
+      saveLocation.deleteSync();
     }
+    saveLocation.createSync();
+    saveLocation.writeAsBytesSync(createSaveData());
   }
 
-  static void saveAs() async {
+  static Future<File?> _getSaveAsLocation() async {
     String? path = await FilePicker.platform.saveFile(
       dialogTitle: "Save as?",
       allowedExtensions: _types,
@@ -35,14 +32,63 @@ abstract class FileIO {
       if (!path.endsWith(".gbt")) {
         path = '$path.gbt';
       }
-      File file = File(path);
-      if (file.existsSync()) {
-        print("Overwriting!");
-      }
-      file.createSync();
-      file.writeAsBytes(createSaveData());
-      Globals.saveLocation = file;
+      return File(path);
     }
+    return null;
+  }
+
+  static void saveAsFile(BuildContext context) async {
+    File? saveLocation = await FileIO._getSaveAsLocation();
+    if (saveLocation == null) return;
+    bool canSave = false;
+    if (saveLocation.existsSync()) {
+      if (context.mounted) {
+        canSave = await showDialog<bool>(
+                context: context,
+                builder: (context) => const OverwriteFileDialog()) ??
+            false;
+      }
+    } else {
+      canSave = true;
+    }
+
+    if (canSave) {
+      FileIO._save(saveLocation);
+      FileIO._triggerLoadStream(saveLocation);
+      Globals.saveLocation = saveLocation;
+    }
+  }
+
+  static void saveFile(BuildContext context) async {
+    if (Globals.saveLocation != null) {
+      if (Globals.saveLocation!.existsSync()) {
+        FileIO._save(Globals.saveLocation!);
+        FileIO._triggerLoadStream(Globals.saveLocation!);
+      } else {
+        bool canSave = false;
+        if (context.mounted) {
+          canSave = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => const FileDeletedDialog()) ??
+              false;
+        }
+        if (canSave) {
+          if (context.mounted) {
+            FileIO._save(Globals.saveLocation!);
+          }
+        }
+      }
+    } else {
+      saveAsFile(context);
+    }
+  }
+
+  static void _triggerLoadStream(File file) {
+    String path = file.path.replaceAll("\\", "/");
+    RegExp reg = RegExp(r"[/](.*).gbt");
+    path = reg.firstMatch(path)?.group(1) ?? "";
+    path = path.split("/").last;
+    Events.load(path);
   }
 
   static void load() async {
@@ -77,11 +123,7 @@ abstract class FileIO {
             }
           }
         }
-        String path = file.path.replaceAll("\\", "/");
-        RegExp reg = RegExp(r"[/](.*).gbt");
-        path = reg.firstMatch(path)?.group(1) ?? "";
-        path = path.split("/").last;
-        Events.load(path);
+        _triggerLoadStream(file);
       }
     }
   }
