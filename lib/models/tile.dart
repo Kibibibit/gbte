@@ -65,4 +65,13 @@ class Tile extends Saveable {
     }
     return Uint8List.fromList(out);
   }
+  
+  @override
+  Tile copy() {
+    Tile out = Tile();
+    for (int i = 0; i < _data.length; i ++) {
+      out._data[i] = _data[i];
+    }
+    return out;
+  }
 }

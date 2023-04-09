@@ -5,6 +5,7 @@ import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/palette.dart';
 import 'package:gbte/models/tile.dart';
+import 'package:gbte/models/tile_app_event.dart';
 
 class TileDisplay extends StatefulWidget {
   final List<int> tiles;
@@ -36,10 +37,13 @@ class _TileDisplayState extends State<TileDisplay> {
   late StreamSubscription<int> tileStream;
   late StreamSubscription<String> loadStream;
 
+  late List<Tile> previousTiles;
+
   @override
   void initState() {
     
     super.initState();
+    _previousTiles();
     tileStream = Events.tileEditStream.stream.listen((tile) {
       if (widget.tiles.contains(tile)) {
         setState(() {
@@ -48,6 +52,7 @@ class _TileDisplayState extends State<TileDisplay> {
       }
     });
     loadStream = Events.loadStream.stream.listen((_){
+      _previousTiles();
       setState(() {
         repaint = true;
       });
@@ -61,8 +66,30 @@ class _TileDisplayState extends State<TileDisplay> {
     loadStream.cancel();
   }
 
+  List<Tile> _mapTiles() {
+    return  widget.tiles.map((e) => Globals.tiles[e].copy()).toList();
+  }
+
+  void _previousTiles() {
+    print("setting previous tiles");
+     setState(() {
+      previousTiles = _mapTiles();
+    });
+  }
+
   int _tilePos(double p, BuildContext context) =>
       (p / (_tileSize(context.size?.width ?? 0))).floor();
+
+  void onPointerDown(PointerEvent event, BuildContext context) {
+    _previousTiles();
+    onEvent(event, context);
+  }
+
+  void onPointerUp() {
+    List<Tile> newTiles = _mapTiles();
+    TileAppEvent event = TileAppEvent(tileIndices: widget.tiles, previousTiles: previousTiles, nextTiles: newTiles);
+    Events.appEvent(event);
+  }
 
   void onEvent(PointerEvent event, BuildContext context) {
     if (!widget.edit) {
@@ -92,8 +119,9 @@ class _TileDisplayState extends State<TileDisplay> {
             color: Colors.black,
             padding: const EdgeInsets.all(2),
             child: Listener(
-              onPointerDown: (event) => onEvent(event, context),
+              onPointerDown: (event) => onPointerDown(event, context),
               onPointerMove: (event) => onEvent(event, context),
+              onPointerUp: (_)=>onPointerUp(),
               child: CustomPaint(
                 painter: TilePainter(
                     edit: widget.edit,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/fileio.dart';
+import 'package:gbte/globals/globals.dart';
 
 class RootPage extends StatefulWidget {
   final Map<String, Widget> pages;
@@ -24,7 +25,11 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
     _tabController = TabController(length: widget.pages.length, vsync: this);
     _loadStreamSubscription = Events.loadStream.stream.listen((file) {
       setState(() {
-        filename = file;
+        if (file.isEmpty) {
+          filename = null;
+        } else {
+          filename = file;
+        }
       });
     });
   }
@@ -44,6 +49,9 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
         leading: Row(
           children: [
             IconButton(
+                onPressed: () => Globals.newFile(),
+                icon: const Icon(Icons.add_box_rounded)),
+            IconButton(
               onPressed: () => FileIO.saveFile(context),
               icon: const Icon(Icons.save),
             ),
@@ -54,6 +62,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
               onPressed: () => FileIO.load(),
               icon: const Icon(Icons.open_in_new),
             ),
+            IconButton(onPressed: ()=>Events.undoEvent(), icon: const Icon(Icons.undo))
           ],
         ),
         toolbarHeight: 40,

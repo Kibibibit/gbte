@@ -55,4 +55,9 @@ class GBCColor extends Saveable {
 
     return Uint8List.fromList(out);
   }
+  
+  @override
+  GBCColor copy() {
+    return GBCColor(r: r, g: g, b: b);
+  }
 }

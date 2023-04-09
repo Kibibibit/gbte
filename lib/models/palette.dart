@@ -41,4 +41,9 @@ class Palette extends Saveable {
 
     return Uint8List.fromList(out);
   }
+  
+  @override
+  Palette copy() {
+    return Palette(colors: colors.map((e) => e.copy()).toList());
+  }
 }

@@ -14,4 +14,6 @@ abstract class Saveable {
   Uint8List save();
   void load(Uint8List data);
 
+  Saveable copy();
+
 }
