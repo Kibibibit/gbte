@@ -80,11 +80,13 @@ class _TileDisplayState extends State<TileDisplay> {
       (p / (_tileSize(context.size?.width ?? 0))).floor();
 
   void onPointerDown(PointerEvent event, BuildContext context) {
+    if (!widget.edit) return;
     _previousTiles();
     onEvent(event, context);
   }
 
   void onPointerUp() {
+    if (!widget.edit) return;
     List<Tile> newTiles = _mapTiles();
     TileAppEvent event = TileAppEvent(tileIndices: widget.tiles, previousTiles: previousTiles, nextTiles: newTiles);
     Events.appEvent(event);
