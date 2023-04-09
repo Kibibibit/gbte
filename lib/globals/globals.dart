@@ -32,6 +32,7 @@ class Globals {
     saveLocation = null;
     saved = false;
     Events.load("");
+    Events.clearAppEventQueue();
   }
 
 

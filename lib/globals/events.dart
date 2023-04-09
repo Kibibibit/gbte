@@ -24,6 +24,11 @@ class Events {
     loadStream.sink.add(filename);
   }
 
+  static void clearAppEventQueue() {
+    _eventQueue.clear();
+    _undoIndex = -1;
+  }
+
   static void appEvent(AppEvent event) {
     Globals.saved = false;
     if (Globals.saveLocation != null) {
@@ -44,6 +49,10 @@ class Events {
       AppEvent event = _eventQueue[_undoIndex];
       event.undoEvent();
       _undoIndex--;
+      Globals.saved = false;
+      if (Globals.saveLocation != null) {
+        FileIO.triggerLoadStream(Globals.saveLocation!);
+      }
     }
   }
 
@@ -52,6 +61,10 @@ class Events {
       _undoIndex++;
       AppEvent event = _eventQueue[_undoIndex];
       event.redoEvent();
+      Globals.saved = false;
+      if (Globals.saveLocation != null) {
+        FileIO.triggerLoadStream(Globals.saveLocation!);
+      }
     }
   }
 }

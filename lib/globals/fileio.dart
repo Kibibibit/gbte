@@ -128,6 +128,7 @@ abstract class FileIO {
           }
         }
         Globals.saved = true;
+        Events.clearAppEventQueue();
         triggerLoadStream(file);
         
       }
