@@ -1,3 +1,5 @@
+import 'package:gbte/globals/events.dart';
+import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/app_event.dart';
 import 'package:gbte/models/gbc_color.dart';
 
@@ -14,8 +16,18 @@ class PaletteAppEvent extends AppEvent {
       required this.nextColor})
       : super(AppEventType.palette);
 
+  void _setPalette(GBCColor color) {
+    Globals.palettes[paletteIndex].colors[colorIndex] = color;
+    Events.updateTile(0);
+  }
+
   @override
   void undoEvent() {
-    // TODO: implement undoEvent
+    _setPalette(previousColor);
+  }
+  
+  @override
+  void redoEvent() {
+    _setPalette(nextColor);
   }
 }

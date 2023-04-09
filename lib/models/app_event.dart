@@ -5,6 +5,7 @@ abstract class AppEvent {
   const AppEvent(this.dtype);
 
   void undoEvent();
+  void redoEvent();
 
 }
 

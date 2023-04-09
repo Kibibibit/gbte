@@ -71,7 +71,6 @@ class _TileDisplayState extends State<TileDisplay> {
   }
 
   void _previousTiles() {
-    print("setting previous tiles");
      setState(() {
       previousTiles = _mapTiles();
     });

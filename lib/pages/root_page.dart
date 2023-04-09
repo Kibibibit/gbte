@@ -45,7 +45,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(filename ?? "Unsaved File"),
-        leadingWidth: 200,
+        leadingWidth: 250,
         leading: Row(
           children: [
             IconButton(
@@ -62,7 +62,8 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
               onPressed: () => FileIO.load(),
               icon: const Icon(Icons.open_in_new),
             ),
-            IconButton(onPressed: ()=>Events.undoEvent(), icon: const Icon(Icons.undo))
+            IconButton(onPressed: ()=>Events.undoEvent(), icon: const Icon(Icons.undo)),
+            IconButton(onPressed: ()=>Events.redoEvent(), icon: const Icon(Icons.redo)),
           ],
         ),
         toolbarHeight: 40,

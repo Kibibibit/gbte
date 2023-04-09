@@ -5,6 +5,8 @@ import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/models/gbc_color.dart';
+import 'package:gbte/models/palette_app_event.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/palette_editor.dart';
 import 'package:gbte/widgets/tile_display.dart';
@@ -26,8 +28,16 @@ class _TilePageState extends State<TilePage> {
   late int green;
   late int blue;
   int tileBank = TileBank.sprite;
+  late GBCColor previousColor;
 
   late StreamSubscription<String> loadStream;
+  late StreamSubscription<int> tileStream;
+
+  void _previousColor() {
+    setState(() {
+      previousColor = GBCColor(r: red, g: green, b: blue);
+    });
+  }
 
   void onBankSelect(int? bank) {
     if (bank != null) {
@@ -52,13 +62,16 @@ class _TilePageState extends State<TilePage> {
     secondaryColor = 0;
     selectedPalette = Globals.tilePalettes[selectedTile];
     loadStream = Events.loadStream.stream.listen((_) => loadColors());
+    tileStream = Events.tileEditStream.stream.listen((_) => loadColors());
     loadColors();
+    _previousColor();
   }
 
   @override
   void dispose() {
     super.dispose();
     loadStream.cancel();
+    tileStream.cancel();
   }
 
   void loadColors() {
@@ -113,6 +126,14 @@ class _TilePageState extends State<TilePage> {
     loadColors();
   }
 
+  void onChangeStart() {
+    _previousColor();
+  }
+
+  void onChangeEnd() {
+    Events.appEvent(PaletteAppEvent(paletteIndex: selectedPalette, colorIndex: primaryColor, previousColor: previousColor, nextColor: GBCColor(r: red, g: green, b: blue)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -130,6 +151,8 @@ class _TilePageState extends State<TilePage> {
             onChangeRed: onChangeRed,
             onChangeGreen: onChangeGreen,
             onChangeBlue: onChangeBlue,
+            onChangeStart: onChangeStart,
+            onChangeEnd:  onChangeEnd,
             red: red,
             green: green,
             blue: blue,

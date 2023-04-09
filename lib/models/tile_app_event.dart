@@ -14,13 +14,23 @@ class TileAppEvent extends AppEvent {
     required this.nextTiles,
   }) : super(AppEventType.tile);
   
-  @override
-  void undoEvent() {
+
+  void _setTiles(List<Tile> from) {
     for (int i = 0; i < tileIndices.length; i++) {
       int tileIndex = tileIndices[i];
-      Tile previousTile = previousTiles[i];
-      Globals.tiles[tileIndex] = previousTile;
+      Tile newTile = from[i];
+      Globals.tiles[tileIndex] = newTile.copy();
       Events.updateTile(tileIndex);
     }
+  }
+
+  @override
+  void undoEvent() {
+    _setTiles(previousTiles);
+  }
+  
+  @override
+  void redoEvent() {
+    _setTiles(nextTiles);
   }
 }

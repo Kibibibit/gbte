@@ -4,6 +4,8 @@ import 'package:gbte/models/app_event.dart';
 
 class Events {
 
+  static int _undoIndex = -1;
+
   static StreamController<int> tileEditStream = StreamController<int>.broadcast();
   static StreamController<String> loadStream = StreamController<String>.broadcast();
 
@@ -20,17 +22,28 @@ class Events {
   }
 
   static void appEvent(AppEvent event) {
-    _eventQueue.insert(0, event);
-    if (_eventQueue.length > 100) {
+    while (_undoIndex < _eventQueue.length-1) {
       _eventQueue.removeLast();
+    }
+    _eventQueue.add(event);
+    _undoIndex++;
+    if (_eventQueue.length > 100) {
+      _eventQueue.removeAt(0);
     }
   }
 
   static void undoEvent() {
-    if (_eventQueue.isNotEmpty) {
-      print("Undoing!");
-      AppEvent event = _eventQueue.removeAt(0);
+    if (_undoIndex >= 0) {
+      AppEvent event = _eventQueue[_undoIndex];
       event.undoEvent();
+      _undoIndex--;
+    }
+  }
+  static void redoEvent() {
+    if (_undoIndex < _eventQueue.length-1) {
+      _undoIndex++;
+      AppEvent event = _eventQueue[_undoIndex];
+      event.redoEvent();
     }
   }
 
