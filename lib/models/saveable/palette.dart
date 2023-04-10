@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:gbte/models/gbc_color.dart';
-import 'package:gbte/models/saveable.dart';
+import 'package:gbte/models/saveable/gbc_color.dart';
+import 'package:gbte/models/saveable/saveable.dart';
 
 class Palette extends Saveable {
   late List<GBCColor> colors;
@@ -42,8 +42,4 @@ class Palette extends Saveable {
     return Uint8List.fromList(out);
   }
   
-  @override
-  Palette copy() {
-    return Palette(colors: colors.map((e) => e.copy()).toList());
-  }
 }

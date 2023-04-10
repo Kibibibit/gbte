@@ -1,13 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
-import 'package:gbte/models/app_event.dart';
-import 'package:gbte/models/gbc_color.dart';
+import 'package:gbte/models/app_event/app_event.dart';
+import 'package:gbte/models/saveable/gbc_color.dart';
 
 class PaletteAppEvent extends AppEvent {
   final int paletteIndex;
   final int colorIndex;
-  final GBCColor previousColor;
-  final GBCColor nextColor;
+  final Uint8List previousColor;
+  final Uint8List nextColor;
 
   const PaletteAppEvent(
       {required this.paletteIndex,
@@ -16,7 +18,9 @@ class PaletteAppEvent extends AppEvent {
       required this.nextColor})
       : super(AppEventType.palette);
 
-  void _setPalette(GBCColor color) {
+  void _setPalette(Uint8List data) {
+    GBCColor color = GBCColor(r: 0, g: 0, b: 0);
+    color.load(data);
     Globals.palettes[paletteIndex].colors[colorIndex] = color;
     Events.updateTile(0);
   }

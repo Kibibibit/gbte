@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/globals/events.dart';
-import 'package:gbte/models/palette.dart';
-import 'package:gbte/models/tile.dart';
+import 'package:gbte/models/saveable/palette.dart';
+import 'package:gbte/models/saveable/tile.dart';
 
 class Globals {
 

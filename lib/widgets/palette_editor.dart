@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/map_range.dart';
-import 'package:gbte/models/gbc_color.dart';
+import 'package:gbte/models/saveable/gbc_color.dart';
 import 'package:gbte/widgets/color_select.dart';
 import 'package:gbte/widgets/palette_select.dart';
 

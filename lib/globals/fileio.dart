@@ -5,9 +5,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
-import 'package:gbte/models/palette.dart';
-import 'package:gbte/models/saveable.dart';
-import 'package:gbte/models/tile.dart';
+import 'package:gbte/models/saveable/palette.dart';
+import 'package:gbte/models/saveable/saveable.dart';
+import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/widgets/file_deleted_dialog.dart';
 import 'package:gbte/widgets/overwrite_file_dialog.dart';
 

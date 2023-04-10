@@ -5,11 +5,12 @@ import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
-import 'package:gbte/models/gbc_color.dart';
-import 'package:gbte/models/palette_app_event.dart';
+import 'package:gbte/models/saveable/gbc_color.dart';
+import 'package:gbte/models/app_event/palette_app_event.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/palette_editor.dart';
 import 'package:gbte/widgets/tile_display.dart';
+import 'package:gbte/widgets/tile_edit_buttons.dart';
 import 'package:gbte/widgets/tile_select.dart';
 
 class TilePage extends StatefulWidget {
@@ -131,7 +132,12 @@ class _TilePageState extends State<TilePage> {
   }
 
   void onChangeEnd() {
-    Events.appEvent(PaletteAppEvent(paletteIndex: selectedPalette, colorIndex: primaryColor, previousColor: previousColor, nextColor: GBCColor(r: red, g: green, b: blue)));
+    Events.appEvent(PaletteAppEvent(
+      paletteIndex: selectedPalette,
+      colorIndex: primaryColor,
+      previousColor: previousColor.save(),
+      nextColor: GBCColor(r: red, g: green, b: blue).save(),
+    ));
   }
 
   @override
@@ -140,6 +146,10 @@ class _TilePageState extends State<TilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          TileEditButtons(
+            tiles: [selectedTile],
+            metatileSize: 1,
+          ),
           TileDisplay(
             tiles: [selectedTile],
             metatileSize: 1,
@@ -152,7 +162,7 @@ class _TilePageState extends State<TilePage> {
             onChangeGreen: onChangeGreen,
             onChangeBlue: onChangeBlue,
             onChangeStart: onChangeStart,
-            onChangeEnd:  onChangeEnd,
+            onChangeEnd: onChangeEnd,
             red: red,
             green: green,
             blue: blue,

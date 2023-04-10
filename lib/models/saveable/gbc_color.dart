@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/helpers/map_range.dart';
-import 'package:gbte/models/saveable.dart';
+import 'package:gbte/models/saveable/saveable.dart';
 
 class GBCColor extends Saveable {
   static const int minC = 0;
@@ -56,8 +56,4 @@ class GBCColor extends Saveable {
     return Uint8List.fromList(out);
   }
   
-  @override
-  GBCColor copy() {
-    return GBCColor(r: r, g: g, b: b);
-  }
 }

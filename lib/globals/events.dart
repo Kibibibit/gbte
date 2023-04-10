@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:gbte/globals/fileio.dart';
 import 'package:gbte/globals/globals.dart';
-import 'package:gbte/models/app_event.dart';
+import 'package:gbte/models/app_event/app_event.dart';
 
 class Events {
   static int _undoIndex = -1;
