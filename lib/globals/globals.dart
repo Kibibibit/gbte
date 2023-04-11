@@ -28,16 +28,27 @@ class Globals {
   static File? saveLocation;
   static bool saved = false;
 
-
-
   static const String exportToOneFile = "exportToOneFile";
   static const String tilesInOneFile = "tilesInOneFile";
   static const String palettesInOneFile = "palettesInOneFile";
+  static const String exportSpritePalettes = "exportSpritePalettes";
+  static const String exportBackgroundPalettes = "exportBackgroundPalettes";
+  static const String exportSpriteTiles = "exportSpriteTiles";
+  static const String exportSharedTiles = "exportSharedTiles";
+  static const String exportBackgroundTiles = "exportBackgroundTiles";
 
   static Map<String, bool> exportFlags = {
     exportToOneFile: false,
     tilesInOneFile: true,
     palettesInOneFile: true,
+  };
+
+  static Map<String, List<int>> exportRanges = {
+    exportSpritePalettes: [],
+    exportBackgroundPalettes: [],
+    exportSpriteTiles: [],
+    exportSharedTiles: [],
+    exportBackgroundTiles: [],
   };
 
   static void newFile() {
@@ -53,11 +64,18 @@ class Globals {
             : "BKG ${index - 8}");
     saveLocation = null;
     saved = false;
-    
+
     exportFlags = {
       exportToOneFile: false,
       tilesInOneFile: true,
       palettesInOneFile: true,
+    };
+    exportRanges = {
+      exportSpritePalettes: [],
+      exportBackgroundPalettes: [],
+      exportSpriteTiles: [],
+      exportSharedTiles: [],
+      exportBackgroundTiles: [],
     };
     Events.load("");
     Events.clearAppEventQueue();
