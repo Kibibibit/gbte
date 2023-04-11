@@ -120,16 +120,19 @@ class _TileDisplayState extends State<TileDisplay> {
           return Container(
             color: Colors.black,
             padding: const EdgeInsets.all(2),
-            child: Listener(
-              onPointerDown: (event) => onPointerDown(event, context),
-              onPointerMove: (event) => onEvent(event, context),
-              onPointerUp: (_)=>onPointerUp(),
-              child: CustomPaint(
-                painter: TilePainter(
-                    edit: widget.edit,
-                    tiles: widget.tiles,
-                    metatileSize: widget.metatileSize,
-                    repaint: repaint),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Listener(
+                onPointerDown: (event) => onPointerDown(event, context),
+                onPointerMove: (event) => onEvent(event, context),
+                onPointerUp: (_)=>onPointerUp(),
+                child: CustomPaint(
+                  painter: TilePainter(
+                      edit: widget.edit,
+                      tiles: widget.tiles,
+                      metatileSize: widget.metatileSize,
+                      repaint: repaint),
+                ),
               ),
             ),
           );

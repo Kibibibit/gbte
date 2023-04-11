@@ -57,4 +57,13 @@ class Tile extends Saveable {
     return Uint8List.fromList(out);
   }
 
+  static Tile fromMatrix(Matrix2D matrix) {
+    assert(matrix.height == Tile.size && matrix.width == Tile.size,"Tile matrix must be 8*8"); 
+    Tile out = Tile();
+    for (int i = 0; i < Tile.size*Tile.size; i++) {
+      out._data.setI(i, matrix.getI(i));
+    }
+    return out;
+  }
+
 }

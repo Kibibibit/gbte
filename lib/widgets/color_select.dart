@@ -84,20 +84,23 @@ class ColorSelect extends StatelessWidget {
               child: Container(
                 color:
                     index == selectedPrimaryColor ? Colors.grey : Colors.white,
-                child: GestureDetector(
-                  onTap: () => onSelectPrimary(index),
-                  onSecondaryTap: () {
-                    if (secondarySelect) {
-                      onSelectSecondary!(index);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        color:
-                            Globals.palettes[palette].colors[index].toColor(),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () => onSelectPrimary(index),
+                    onSecondaryTap: () {
+                      if (secondarySelect) {
+                        onSelectSecondary!(index);
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          color:
+                              Globals.palettes[palette].colors[index].toColor(),
+                        ),
                       ),
                     ),
                   ),

@@ -15,7 +15,7 @@ class Matrix2D {
   int get height => _height;
 
   int _index(int x, int y) {
-    assert(x >= 0 && x < _width && y >= 0 && y < height,
+    assert(x >= 0 && x < _width && y >= 0 && y < _height,
         "Invalid matrix $x,$y index for matrix of size ($_width, $_height)!");
     return (y * _width) + x;
   }
@@ -104,10 +104,10 @@ class Matrix2D {
         yOffset = 1;
         break;
       case ShuntDirection.left:
-        xOffset = 1;
+        xOffset = -1;
         break;
       case ShuntDirection.right:
-        xOffset = -1;
+        xOffset = 1;
         break;
     }
 
@@ -123,18 +123,33 @@ class Matrix2D {
 
   }
 
-  Matrix2D subMatrix(int x, int y, int width, int height) {
-    Matrix2D out = Matrix2D(width, height);
-    for (int xx = 0; x < width; x++) {
-      for (int yy = 0; y < height; y++) {
+  Matrix2D subMatrix(int x, int y, int subWidth, int subHeight) {
+    Matrix2D out = Matrix2D(subWidth, subHeight);
+    for (int xx = 0; xx < subWidth; xx++) {
+      for (int yy = 0; yy < subHeight; yy++) {
         int px = xx+x;
         int py = yy+y;
-        if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
+        if (px >= 0 && px < width && py >= 0 && py < height) {
           out.set(xx, yy, get(px, py));
         } else {
           out.set(xx,yy,0);
         }
       }
+    }
+    return out;
+  }
+
+
+  @override
+  String toString() {
+    String out = "\n";
+    for (int y = 0; y < height; y++) {
+      String row = "|";
+      for (int x = 0; x < width; x++) {
+        row = "$row ${get(x,y).toRadixString(16)}";
+      }
+      row = "$row |";
+      out = "$out$row\n";
     }
     return out;
   }
