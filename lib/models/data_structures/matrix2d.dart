@@ -139,6 +139,52 @@ class Matrix2D {
     return out;
   }
 
+  Matrix2D mirror(bool vertical) {
+
+    Matrix2D out = Matrix2D(width, height);
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        int ox = x;
+        int oy = y;
+        if (vertical) {
+          oy = height-1-y;
+        } else {
+          ox = width-1-x;
+        }
+        out.set(ox, oy, get(x, y));
+      }
+    }
+
+    return out;
+  }
+
+  Matrix2D rotate(bool counterClockWise) {
+
+    late Matrix2D out;
+
+    if (counterClockWise) {
+      out = mirror(false);
+      out = out.transpose();
+    } else {
+      out = transpose();
+      out = out.mirror(false);
+    }
+
+    return out;
+
+  }
+
+  Matrix2D transpose() {
+    Matrix2D out = Matrix2D(width, height);
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        out.set(y, x, get(x, y));
+      }
+    }
+    return out;
+  }
+
 
   @override
   String toString() {
