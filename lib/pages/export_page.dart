@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/widgets/dialog/tile_select_dialog.dart';
 import 'package:gbte/widgets/labelled_checkbox.dart';
 
 class ExportPage extends StatefulWidget {
@@ -50,6 +51,7 @@ class _ExportPageState extends State<ExportPage> {
             LabelledCheckbox(label: "Export as one File", value: exportToOneFile, onChanged: (v) => onFlagChange(Globals.exportToOneFile,v)),
             LabelledCheckbox(label: "Export tiles in one file", value: tilesInOneFile, onChanged: (v) => onFlagChange(Globals.tilesInOneFile,v), enabled: !exportToOneFile),
             LabelledCheckbox(label: "Export palettes in one file", value: palettesInOneFile, onChanged: (v) => onFlagChange(Globals.palettesInOneFile,v), enabled: !exportToOneFile),
+            TextButton(onPressed: () => showDialog(context: context, builder: (context)=>const TileSelectDialog(multiSelect: false)), child: const Text("dialog"))
           ],
         )
       ],

@@ -16,6 +16,7 @@ class TileDisplay extends StatefulWidget {
   final int secondaryColor;
 
   final bool edit;
+  final bool border;
 
   const TileDisplay({
     super.key,
@@ -24,6 +25,7 @@ class TileDisplay extends StatefulWidget {
     required this.primaryColor,
     required this.secondaryColor,
     this.edit = false,
+    this.border = true,
   });
 
   @override
@@ -118,10 +120,10 @@ class _TileDisplayState extends State<TileDisplay> {
         aspectRatio: 1,
         child: LayoutBuilder(builder: (context, constraints) {
           return Container(
-            color: Colors.black,
-            padding: const EdgeInsets.all(2),
+            color: Colors.white,
+            padding: EdgeInsets.all(widget.edit ? 2 : 0),
             child: MouseRegion(
-              cursor: SystemMouseCursors.click,
+              cursor: widget.edit ? SystemMouseCursors.click : MouseCursor.defer,
               child: Listener(
                 onPointerDown: (event) => onPointerDown(event, context),
                 onPointerMove: (event) => onEvent(event, context),
@@ -129,6 +131,7 @@ class _TileDisplayState extends State<TileDisplay> {
                 child: CustomPaint(
                   painter: TilePainter(
                       edit: widget.edit,
+                      border: widget.border,
                       tiles: widget.tiles,
                       metatileSize: widget.metatileSize,
                       repaint: repaint),
@@ -147,12 +150,14 @@ class TilePainter extends CustomPainter {
   final int metatileSize;
   final bool edit;
   final bool repaint;
+  final bool border;
 
   TilePainter({
     required this.tiles,
     required this.metatileSize,
     required this.edit,
     required this.repaint,
+    required this.border,
   });
 
   @override
@@ -190,10 +195,12 @@ class TilePainter extends CustomPainter {
         }
       }
     }
+    if (border) {
     painter.strokeWidth = 3.0;
     painter.style = PaintingStyle.stroke;
     painter.color = Colors.black;
     canvas.drawRect(Rect.fromLTWH(drawX, drawY, tileSize, tileSize), painter);
+    }
   }
 
   @override
