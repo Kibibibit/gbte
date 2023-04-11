@@ -8,8 +8,9 @@ import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 import 'package:gbte/models/saveable/tile.dart';
-import 'package:gbte/widgets/file_deleted_dialog.dart';
-import 'package:gbte/widgets/overwrite_file_dialog.dart';
+import 'package:gbte/widgets/dialog/export_dialog.dart';
+import 'package:gbte/widgets/dialog/file_deleted_dialog.dart';
+import 'package:gbte/widgets/dialog/overwrite_file_dialog.dart';
 
 abstract class FileIO {
   static const List<String> _types = ["gbt"];
@@ -146,4 +147,16 @@ abstract class FileIO {
 
     return out;
   }
+
+
+  static Future<void> exportFile(BuildContext context) async {
+
+    if (context.mounted) {
+      await showDialog(context: context, builder: (context) => const ExportDialog());
+    }
+
+
+  }
+
+
 }
