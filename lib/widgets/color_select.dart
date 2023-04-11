@@ -81,10 +81,10 @@ class ColorSelect extends StatelessWidget {
             4,
             (index) => AspectRatio(
               aspectRatio: 1,
-              child: Material(
+              child: Container(
                 color:
                     index == selectedPrimaryColor ? Colors.grey : Colors.white,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => onSelectPrimary(index),
                   onSecondaryTap: () {
                     if (secondarySelect) {

@@ -125,7 +125,17 @@ class Matrix2D {
 
   Matrix2D subMatrix(int x, int y, int width, int height) {
     Matrix2D out = Matrix2D(width, height);
-    //TODO: submatrix function
+    for (int xx = 0; x < width; x++) {
+      for (int yy = 0; y < height; y++) {
+        int px = xx+x;
+        int py = yy+y;
+        if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
+          out.set(xx, yy, get(px, py));
+        } else {
+          out.set(xx,yy,0);
+        }
+      }
+    }
     return out;
   }
 
