@@ -1,4 +1,5 @@
-import 'package:flutter/gestures.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/widgets/dialog/fullscreen_dialog.dart';
@@ -18,32 +19,60 @@ class _TileSelectDialogState extends State<TileSelectDialog> {
   late ScrollController scrollController;
 
   int currentTile = 0;
-  bool pointerDown = false;
-  bool updated = false;
+  int startIndex = 0;
 
   final int tileWidth = 80;
 
   int tileIndex(int x, int y, int width) => (y * width) + x;
 
-  void onDrag() {
-    if (!updated) {
-      setState(() {
-        toggle();
-        updated = true;
-      });
-    }
-  }
+  int tileX(int index, int width) => index % width;
+  int tileY(int index, int width) => (index / width).floor();
 
-  void onTap() {
-    toggle();
-  }
-
-  void toggle() {
+  void onTapDown() {
     setState(() {
-      if (selected.contains(currentTile)) {
-        selected.remove(currentTile);
+      startIndex = currentTile;
+    });
+  }
+
+  void onSecondaryTap() {
+    setState(() {
+      selected = [];
+    });
+  }
+
+  void onDrag(int width) {
+    setState(() {
+      selected = [];
+
+      if (widget.multiSelect) {
+        int sx = tileX(startIndex, width);
+        int sy = tileY(startIndex, width);
+
+        int ex = tileX(currentTile, width);
+        int ey = tileY(currentTile, width);
+
+        int x0 = min(sx, ex);
+        int x1 = max(sx, ex);
+        int y0 = min(sy, ey);
+        int y1 = max(sy, ey);
+
+        for (int x = x0; x <= x1; x++) {
+          for (int y = y0; y <= y1; y++) {
+            selected.add(tileIndex(x, y, width));
+          }
+        }
       } else {
-        selected.add(currentTile);
+        toggle(currentTile);
+      }
+    });
+  }
+
+  void toggle(int index) {
+    setState(() {
+      if (selected.contains(index)) {
+        selected.remove(index);
+      } else {
+        selected.add(index);
       }
     });
   }
@@ -57,28 +86,32 @@ class _TileSelectDialogState extends State<TileSelectDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenDialog(
+    return FullscreenDialog<List<int>>(
       title: "Select Tile${widget.multiSelect ? "s" : ""}",
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(selected),
+            child: const Text("Select"))
+      ],
       child: LayoutBuilder(builder: (context, constraints) {
+        int width = (constraints.maxWidth / tileWidth).floor();
         return GestureDetector(
-          onTap: () => onTap(),
-          onHorizontalDragUpdate: (_) => onDrag(),
-          onVerticalDragUpdate: (_) => onDrag(),
-          onVerticalDragEnd: (_) => setState(() {
-            updated = false;
-          }),
-          onHorizontalDragEnd: (_) => setState(() {
-            updated = false;
-          }),
+          onHorizontalDragUpdate: (_) => onDrag(width),
+          onVerticalDragUpdate: (_) => onDrag(width),
+          onTapDown: (_) => onTapDown(),
+          onTapUp: (_) => toggle(currentTile),
+          onHorizontalDragStart: (_) => onTapDown(),
+          onVerticalDragStart: (_) => onTapDown(),
+          onSecondaryTap: () => onSecondaryTap(),
           child: GridView.count(
             controller: scrollController,
-            crossAxisCount: (constraints.maxWidth / tileWidth).floor(),
+            crossAxisCount: width,
             children: List.generate(
               Globals.tiles.length,
               (index) => MouseRegion(
+                cursor: SystemMouseCursors.click,
                 onEnter: (_) => setState(() {
                   currentTile = index;
-                  updated = false;
                 }),
                 child: Stack(
                   children: [
@@ -94,7 +127,9 @@ class _TileSelectDialogState extends State<TileSelectDialog> {
                       decoration: BoxDecoration(
                         color: selected.contains(index)
                             ? const Color(0x330000FF)
-                            : Colors.transparent,
+                            : index == currentTile
+                                ? const Color(0x110000FF)
+                                : Colors.transparent,
                         border: Border.all(
                             color: selected.contains(index)
                                 ? const Color(0xFF0000FF)
