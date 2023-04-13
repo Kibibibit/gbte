@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gbte/components/int_editing_controller.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/widgets/dialog/fullscreen_dialog.dart';
 import 'package:gbte/widgets/int_field.dart';
@@ -21,14 +22,14 @@ class _ExportDialogState extends State<ExportDialog> {
   late int exportSharedTiles;
   late int exportBackgroundTiles;
 
-  late TextEditingController exportSpriteTilesController;
+  late IntEditingController exportSpriteTilesController;
 
   @override
   void initState() {
     super.initState();
     loadState();
     exportSpriteTilesController =
-        TextEditingController(text: exportSpriteTiles.toString());
+        IntEditingController(max: 255, intValue: Globals.exportRanges[Globals.exportSpriteTiles]!);
   }
 
   void loadState() {
@@ -75,7 +76,7 @@ class _ExportDialogState extends State<ExportDialog> {
   Widget numberField(
       {required String labelText,
       required String key,
-      required TextEditingController controller,
+      required IntEditingController controller,
       required int min,
       required int max,
       required void Function(int) onChange}) {
@@ -83,8 +84,6 @@ class _ExportDialogState extends State<ExportDialog> {
         width: 200,
         child: IntField(
           controller: controller,
-          min: min,
-          max: max,
           onChange: onChange,
           previousValue: Globals.exportRanges[key] ?? 0,
           decoration: InputDecoration(labelText: labelText),

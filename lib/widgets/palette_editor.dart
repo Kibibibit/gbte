@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/components/int_editing_controller.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/map_range.dart';
 import 'package:gbte/models/saveable/gbc_color.dart';
 import 'package:gbte/widgets/color_select.dart';
+import 'package:gbte/widgets/int_field.dart';
 import 'package:gbte/widgets/palette_select.dart';
 
 class PaletteEditor extends StatelessWidget {
@@ -25,6 +27,10 @@ class PaletteEditor extends StatelessWidget {
   final int green;
   final int blue;
 
+  final IntEditingController redController;
+  final IntEditingController greenController;
+  final IntEditingController blueController;
+
   const PaletteEditor({
     super.key,
     required this.onChangeRed,
@@ -43,17 +49,20 @@ class PaletteEditor extends StatelessWidget {
     required this.onChangePalette,
     required this.onChangeStart,
     required this.onChangeEnd,
+    required this.redController,
+    required this.greenController,
+    required this.blueController,
   });
 
   GBCColor getColor() {
     return Globals.palettes[selectedPalette].colors[selectedPrimaryColor];
   }
 
-  Widget colorSlider({
-    required String label,
-    required void Function(int) onChange,
-    required int value,
-  }) {
+  Widget colorSlider(
+      {required String label,
+      required void Function(int) onChange,
+      required int value,
+      required IntEditingController controller}) {
     return Row(
       children: [
         SizedBox(width: 10, child: Text(label)),
@@ -65,7 +74,14 @@ class PaletteEditor extends StatelessWidget {
             mapRange(v, 0.0, 1.0, 0, 31),
           ),
         ),
-        SizedBox(width: 20, child: Text("$value")),
+        SizedBox(
+          width: 50,
+          child: IntField(
+            controller: controller,
+            onChange: onChange,
+            previousValue: value,
+          ),
+        ),
       ],
     );
   }
@@ -75,9 +91,9 @@ class PaletteEditor extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        colorSlider(label: "R", onChange: onChangeRed, value: red),
-        colorSlider(label: "G", onChange: onChangeGreen, value: green),
-        colorSlider(label: "B", onChange: onChangeBlue, value: blue),
+        colorSlider(label: "R", onChange: onChangeRed, value: red, controller: redController),
+        colorSlider(label: "G", onChange: onChangeGreen, value: green, controller: greenController),
+        colorSlider(label: "B", onChange: onChangeBlue, value: blue, controller: blueController),
         const Divider(),
         SizedBox(
           height: 50,

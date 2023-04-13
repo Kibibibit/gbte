@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gbte/components/int_editing_controller.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
@@ -30,6 +31,10 @@ class _TilePageState extends State<TilePage> {
   late int blue;
   int tileBank = TileBank.sprite;
   late GBCColor previousColor;
+
+  late IntEditingController redController;
+  late IntEditingController greenController;
+  late IntEditingController blueController;
 
   late StreamSubscription<String> loadStream;
   late StreamSubscription<int> tileStream;
@@ -64,7 +69,11 @@ class _TilePageState extends State<TilePage> {
     selectedPalette = Globals.tilePalettes[selectedTile];
     loadStream = Events.loadStream.stream.listen((_) => loadColors());
     tileStream = Events.tileEditStream.stream.listen((_) => loadColors());
+    redController = IntEditingController(max:31);
+    greenController = IntEditingController(max: 31);
+    blueController = IntEditingController(max: 31);
     loadColors();
+    
     _previousColor();
   }
 
@@ -75,11 +84,14 @@ class _TilePageState extends State<TilePage> {
     tileStream.cancel();
   }
 
-  void loadColors() {
+  void loadColors({bool updatedControllers = false}) {
     setState(() {
       red = Globals.palettes[selectedPalette].colors[primaryColor].r;
       green = Globals.palettes[selectedPalette].colors[primaryColor].g;
       blue = Globals.palettes[selectedPalette].colors[primaryColor].b;
+      redController.text = red.toString();
+      blueController.text = blue.toString();
+      greenController.text = green.toString();
     });
   }
 
@@ -163,6 +175,9 @@ class _TilePageState extends State<TilePage> {
             onChangeBlue: onChangeBlue,
             onChangeStart: onChangeStart,
             onChangeEnd: onChangeEnd,
+            redController: redController,
+            greenController: greenController,
+            blueController: blueController,
             red: red,
             green: green,
             blue: blue,
