@@ -43,12 +43,12 @@ class Globals {
     palettesInOneFile: true,
   };
 
-  static Map<String, List<int>> exportRanges = {
-    exportSpritePalettes: [],
-    exportBackgroundPalettes: [],
-    exportSpriteTiles: [],
-    exportSharedTiles: [],
-    exportBackgroundTiles: [],
+  static Map<String, int> exportRanges = {
+    exportSpritePalettes: 0,
+    exportBackgroundPalettes: 0,
+    exportSpriteTiles: 0,
+    exportSharedTiles: 0,
+    exportBackgroundTiles: 0,
   };
 
   static void newFile() {
@@ -71,11 +71,11 @@ class Globals {
       palettesInOneFile: true,
     };
     exportRanges = {
-      exportSpritePalettes: [],
-      exportBackgroundPalettes: [],
-      exportSpriteTiles: [],
-      exportSharedTiles: [],
-      exportBackgroundTiles: [],
+      exportSpritePalettes: 0,
+      exportBackgroundPalettes: 0,
+      exportSpriteTiles: 0,
+      exportSharedTiles: 0,
+      exportBackgroundTiles: 0,
     };
     Events.load("");
     Events.clearAppEventQueue();

@@ -40,7 +40,9 @@ class PaletteEditor extends StatelessWidget {
     required this.green,
     required this.blue,
     required this.paletteBank,
-    required this.onChangePalette, required this.onChangeStart, required this.onChangeEnd,
+    required this.onChangePalette,
+    required this.onChangeStart,
+    required this.onChangeEnd,
   });
 
   GBCColor getColor() {
@@ -56,8 +58,8 @@ class PaletteEditor extends StatelessWidget {
       children: [
         SizedBox(width: 10, child: Text(label)),
         Slider(
-          onChangeStart: (_)=> onChangeStart(),
-          onChangeEnd: (_)=> onChangeEnd(),
+          onChangeStart: (_) => onChangeStart(),
+          onChangeEnd: (_) => onChangeEnd(),
           value: mapRangeToDouble(value, 0, 31, 0, 1),
           onChanged: (v) => onChange(
             mapRange(v, 0.0, 1.0, 0, 31),
