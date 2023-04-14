@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/int_to_bytes.dart';
+import 'package:gbte/helpers/string_to_bytes.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 import 'package:gbte/models/saveable/tile.dart';
@@ -126,6 +127,11 @@ abstract class FileIO {
           Globals.exportRanges[key] = value;
         }
 
+        for (String key in Globals.exportStrings.keys) {
+          String value = _loadString(data);
+          Globals.exportStrings[key] = value;
+        }
+
         List<int> object = [];
         int objectSize = 0;
         int paletteCount = 0;
@@ -169,7 +175,10 @@ abstract class FileIO {
     for (int value in Globals.exportRanges.values) {
       out.add(value);
     }
-    
+
+    for (String string in Globals.exportStrings.values) {
+      out.addAll(stringToBytes(string));
+    }
 
     for (Palette palette in Globals.palettes) {
       out.addAll(palette.save().toList());

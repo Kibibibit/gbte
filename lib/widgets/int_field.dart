@@ -7,21 +7,22 @@ class IntField extends StatelessWidget {
   final Function(int value) onChange;
   final int previousValue;
   final InputDecoration? decoration;
+  final bool enabled;
 
   const IntField(
       {super.key,
       required this.controller,
       required this.onChange,
       this.decoration,
-      required this.previousValue});
-
-
+      required this.previousValue,
+      this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       decoration: decoration,
       controller: controller,
+      enabled: enabled,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (value) {
         controller.text = value;
