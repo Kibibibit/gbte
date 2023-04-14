@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/helpers/int_to_bytes.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 import 'package:gbte/models/saveable/tile.dart';
@@ -15,12 +17,22 @@ import 'package:gbte/widgets/dialog/overwrite_file_dialog.dart';
 abstract class FileIO {
   static const List<String> _types = ["gbt"];
 
+  static String _loadString(List<int> data) {
+    List<int> sizeBytes = data.getRange(0, 4).toList(); 
+    data.removeRange(0, 4);
+    int size = bytesToInt(sizeBytes);
+    List<int> units = data.getRange(0, size).toList();
+    data.removeRange(0, size);
+    return utf8.decode(units);
+
+  }
+
   static void _save(File saveLocation) async {
     if (saveLocation.existsSync()) {
       saveLocation.deleteSync();
     }
     saveLocation.createSync();
-    saveLocation.writeAsBytesSync(createSaveData());
+    saveLocation.writeAsBytesSync(createSaveData(saveLocation));
     Globals.saved = true;
 
   }
@@ -103,6 +115,17 @@ abstract class FileIO {
       if (file.existsSync()) {
         Globals.saveLocation = file;
         List<int> data = file.readAsBytesSync().toList();
+
+        for (String key in Globals.exportFlags.keys) {
+          int flag = data.removeAt(0);
+          Globals.exportFlags[key] = flag > 0;
+        }
+
+        for (String key in Globals.exportRanges.keys) {
+          int value = data.removeAt(0);
+          Globals.exportRanges[key] = value;
+        }
+
         List<int> object = [];
         int objectSize = 0;
         int paletteCount = 0;
@@ -136,8 +159,18 @@ abstract class FileIO {
     }
   }
 
-  static List<int> createSaveData() {
+  static List<int> createSaveData(File saveLocation) {
     List<int> out = [];
+
+    for (bool value in Globals.exportFlags.values) {
+      out.add(value ? 0x01: 0x00);
+    }
+
+    for (int value in Globals.exportRanges.values) {
+      out.add(value);
+    }
+    
+
     for (Palette palette in Globals.palettes) {
       out.addAll(palette.save().toList());
     }
