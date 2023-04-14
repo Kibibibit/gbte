@@ -21,15 +21,31 @@ class _ExportDialogState extends State<ExportDialog> {
   late int exportSpriteTiles;
   late int exportSharedTiles;
   late int exportBackgroundTiles;
+  late int exportSpritePalettes;
+  late int exportBackgroundPalettes;
 
   late IntEditingController exportSpriteTilesController;
+  late IntEditingController exportSharedTilesController;
+  late IntEditingController exportBackgroundTilesController;
+  late IntEditingController exportSpritePalettesController;
+  late IntEditingController exportBackgroundPalettesController;
 
   @override
   void initState() {
     super.initState();
     loadState();
-    exportSpriteTilesController =
-        IntEditingController(max: 255, intValue: Globals.exportRanges[Globals.exportSpriteTiles]!);
+    exportSpriteTilesController = IntEditingController(
+        max: 255, intValue: Globals.exportRanges[Globals.exportSpriteTiles]!);
+    exportSharedTilesController = IntEditingController(
+        max: 255, intValue: Globals.exportRanges[Globals.exportSharedTiles]!);
+    exportBackgroundTilesController = IntEditingController(
+        max: 255,
+        intValue: Globals.exportRanges[Globals.exportBackgroundTiles]!);
+    exportSpritePalettesController = IntEditingController(
+        max: 7, intValue: Globals.exportRanges[Globals.exportSpritePalettes]!);
+    exportBackgroundPalettesController = IntEditingController(
+        max: 7,
+        intValue: Globals.exportRanges[Globals.exportBackgroundPalettes]!);
   }
 
   void loadState() {
@@ -41,6 +57,10 @@ class _ExportDialogState extends State<ExportDialog> {
       exportSharedTiles = Globals.exportRanges[Globals.exportSharedTiles]!;
       exportBackgroundTiles =
           Globals.exportRanges[Globals.exportBackgroundTiles]!;
+      exportSpritePalettes =
+          Globals.exportRanges[Globals.exportSpritePalettes]!;
+      exportBackgroundPalettes =
+          Globals.exportRanges[Globals.exportBackgroundPalettes]!;
     });
   }
 
@@ -117,13 +137,51 @@ class _ExportDialogState extends State<ExportDialog> {
                   enabled: !exportToOneFile),
               const Divider(),
               numberField(
-                  labelText: "Sprite tiles to export",
-                  key: Globals.exportSpriteTiles,
-                  min: 0,
-                  max: 255,
-                  onChange: (value) =>
-                      onIntChange(Globals.exportSpriteTiles, value),
-                  controller: exportSpriteTilesController),
+                labelText: "Export sprite tiles up to:",
+                key: Globals.exportSpriteTiles,
+                min: 0,
+                max: 255,
+                onChange: (value) =>
+                    onIntChange(Globals.exportSpriteTiles, value),
+                controller: exportSpriteTilesController,
+              ),
+              numberField(
+                labelText: "Export shared tiles up to:",
+                key: Globals.exportSharedTiles,
+                min: 0,
+                max: 255,
+                onChange: (value) =>
+                    onIntChange(Globals.exportSharedTiles, value),
+                controller: exportSharedTilesController,
+              ),
+              numberField(
+                labelText: "Export background tiles up to:",
+                key: Globals.exportSharedTiles,
+                min: 0,
+                max: 255,
+                onChange: (value) =>
+                    onIntChange(Globals.exportBackgroundTiles, value),
+                controller: exportBackgroundTilesController,
+              ),
+              const Divider(),
+              numberField(
+                labelText: "Export sprite palettes up to:",
+                key: Globals.exportSpritePalettes,
+                controller: exportSpritePalettesController,
+                min: 0,
+                max: 7,
+                onChange: (value) =>
+                    onIntChange(Globals.exportSpritePalettes, value),
+              ),
+              numberField(
+                labelText: "Export background palettes up to:",
+                key: Globals.exportBackgroundPalettes,
+                controller: exportBackgroundPalettesController,
+                min: 0,
+                max: 7,
+                onChange: (value) =>
+                    onIntChange(Globals.exportBackgroundPalettes, value),
+              )
             ],
           )
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/fileio.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/widgets/shortcut_handler_widget.dart';
 
 class RootPage extends StatefulWidget {
   final Map<String, Widget> pages;
@@ -86,16 +87,18 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
                   .toList()),
         ),
       ),
-      body: LayoutBuilder(builder: (context, constraints) {
-        return SizedBox(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          child: TabBarView(
-            controller: _tabController,
-            children: widget.pages.values.toList(),
-          ),
-        );
-      }),
+      body: ShortcutHandlerWidget(
+        child: LayoutBuilder(builder: (context, constraints) {
+          return SizedBox(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            child: TabBarView(
+              controller: _tabController,
+              children: widget.pages.values.toList(),
+            ),
+          );
+        }),
+      ),
     );
   }
 }
