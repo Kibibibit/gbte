@@ -14,18 +14,18 @@ import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/widgets/dialog/export_dialog.dart';
 import 'package:gbte/widgets/dialog/file_deleted_dialog.dart';
 import 'package:gbte/widgets/dialog/overwrite_file_dialog.dart';
+import 'package:gbte/widgets/dialog/unsaved_changes_dialog.dart';
 
 abstract class FileIO {
   static const List<String> _types = ["gbt"];
 
   static String _loadString(List<int> data) {
-    List<int> sizeBytes = data.getRange(0, 4).toList(); 
+    List<int> sizeBytes = data.getRange(0, 4).toList();
     data.removeRange(0, 4);
     int size = bytesToInt(sizeBytes);
     List<int> units = data.getRange(0, size).toList();
     data.removeRange(0, size);
     return utf8.decode(units);
-
   }
 
   static void _save(File saveLocation) async {
@@ -35,7 +35,6 @@ abstract class FileIO {
     saveLocation.createSync();
     saveLocation.writeAsBytesSync(createSaveData(saveLocation));
     Globals.saved = true;
-
   }
 
   static Future<File?> _getSaveAsLocation() async {
@@ -108,7 +107,19 @@ abstract class FileIO {
     Events.load(path);
   }
 
-  static void load() async {
+  static void load(BuildContext context) async {
+    if (!Globals.saved) {
+      if (context.mounted) {
+        bool cont = await showDialog(
+                context: context,
+                builder: (context) => const UnsavedChangesDialog()) ??
+            false;
+        if (!cont) {
+          return;
+        }
+      }
+    }
+
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(dialogTitle: "Load", allowedExtensions: _types);
     if (result != null) {
@@ -160,7 +171,6 @@ abstract class FileIO {
         Globals.saved = true;
         Events.clearAppEventQueue();
         triggerLoadStream(file);
-        
       }
     }
   }
@@ -169,7 +179,7 @@ abstract class FileIO {
     List<int> out = [];
 
     for (bool value in Globals.exportFlags.values) {
-      out.add(value ? 0x01: 0x00);
+      out.add(value ? 0x01 : 0x00);
     }
 
     for (int value in Globals.exportRanges.values) {
@@ -190,15 +200,10 @@ abstract class FileIO {
     return out;
   }
 
-
   static Future<void> exportFile(BuildContext context) async {
-
     if (context.mounted) {
-      await showDialog(context: context, builder: (context) => const ExportDialog());
+      await showDialog(
+          context: context, builder: (context) => const ExportDialog());
     }
-
-
   }
-
-
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/fileio.dart';
+import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/shortcuts/meta_key_activator.dart';
 
 class ShortcutHandlerWidget extends StatelessWidget {
@@ -13,6 +14,9 @@ class ShortcutHandlerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
+        MetaKeyActivator.control(LogicalKeyboardKey.keyN): () {
+          Globals.newFile(context);
+        },
         MetaKeyActivator.control(LogicalKeyboardKey.keyS): () {
           FileIO.saveFile(context);
         },
@@ -20,7 +24,7 @@ class ShortcutHandlerWidget extends StatelessWidget {
           FileIO.saveAsFile(context);
         },
         MetaKeyActivator.control(LogicalKeyboardKey.keyO): () {
-          FileIO.load();
+          FileIO.load(context);
         },
         MetaKeyActivator.control(LogicalKeyboardKey.keyZ): () {
           Events.undoEvent();

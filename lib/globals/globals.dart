@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/tile.dart';
+import 'package:gbte/widgets/dialog/unsaved_changes_dialog.dart';
 
 class Globals {
   static int _tileIndex(int index, int bank) =>
@@ -86,7 +88,17 @@ class Globals {
     exportSpritePalettesLocation: "",
   };
 
-  static void newFile() {
+  static void newFile(BuildContext context) async {
+
+    if (!saved) {
+      if (context.mounted) {
+        bool cont = await showDialog(context: context, builder: (context) => const UnsavedChangesDialog()) ?? false;
+        if (!cont) {
+          return;
+        }
+      }
+    }
+
     tiles = List.generate(Constants.tileCount, (_) => Tile());
     palettes =
         List.generate(Constants.paletteCount, (_) => Palette.defaultPalette());

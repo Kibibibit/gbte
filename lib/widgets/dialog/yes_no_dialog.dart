@@ -22,6 +22,7 @@ class YesNoDialog extends StatelessWidget {
       ),
     ]);
     return SimpleDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal:12, vertical: 16),
       title: title,
       children: children,
     );

@@ -50,7 +50,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
         leading: Row(
           children: [
             IconButton(
-                onPressed: () => Globals.newFile(),
+                onPressed: () => Globals.newFile(context),
                 icon: const Icon(Icons.add_box_rounded)),
             IconButton(
               onPressed: () => FileIO.saveFile(context),
@@ -60,7 +60,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
                 onPressed: () => FileIO.saveAsFile(context),
                 icon: const Icon(Icons.save_as)),
             IconButton(
-              onPressed: () => FileIO.load(),
+              onPressed: () => FileIO.load(context),
               icon: const Icon(Icons.open_in_new),
             ),
             IconButton(onPressed: ()=>Events.undoEvent(), icon: const Icon(Icons.undo)),
