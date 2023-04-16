@@ -4,8 +4,11 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/constants.dart';
+import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/helpers/filename_from_path.dart';
 import 'package:gbte/helpers/int_to_bytes.dart';
 import 'package:gbte/helpers/string_to_bytes.dart';
 import 'package:gbte/models/saveable/palette.dart';
@@ -18,6 +21,8 @@ import 'package:gbte/widgets/dialog/unsaved_changes_dialog.dart';
 
 abstract class FileIO {
   static const List<String> _types = ["gbt"];
+
+  static const int _maxWidth = 40;
 
   static String _loadString(List<int> data) {
     List<int> sizeBytes = data.getRange(0, 4).toList();
@@ -100,10 +105,7 @@ abstract class FileIO {
   }
 
   static void triggerLoadStream(File file) {
-    String path = file.path.replaceAll("\\", "/");
-    RegExp reg = RegExp(r"[/](.*).gbt");
-    path = reg.firstMatch(path)?.group(1) ?? "";
-    path = path.split("/").last;
+    String path = fileNameFromPath(file.path);
     Events.load(path);
   }
 
@@ -201,9 +203,128 @@ abstract class FileIO {
   }
 
   static Future<void> exportFile(BuildContext context) async {
+    bool doExport = false;
     if (context.mounted) {
-      await showDialog(
+      doExport = await showDialog(
           context: context, builder: (context) => const ExportDialog());
+    } else {
+      return;
     }
+    if (!doExport) return;
+    if (Globals.exportFlags[Globals.exportToOneFile]!) {
+      _exportFile(
+        Globals.exportStrings[Globals.exportOneFileLocation]!,
+        spriteTiles: true,
+        sharedTiles: true,
+        backgroundTiles: true,
+        spritePalettes: true,
+        backgroundPalettes: true,
+      );
+    }
+  }
+
+  static void _exportFile(
+    String path, {
+    bool spriteTiles = false,
+    bool sharedTiles = false,
+    bool backgroundTiles = false,
+    bool spritePalettes = false,
+    bool backgroundPalettes = false,
+  }) {
+    File cFile = File(path);
+    File hFile = File(path.replaceAll(".c", ".h"));
+
+    if (cFile.existsSync()) {
+      cFile.deleteSync();
+    }
+    cFile.createSync();
+    if (hFile.existsSync()) {
+      hFile.deleteSync();
+    }
+    hFile.createSync();
+
+    List<String> cLines = _fileHeader(path, false);
+    List<String> hLines = [
+      "#ifndef _${fileNameFromPath(path).toUpperCase()}_H",
+      "#define _${fileNameFromPath(path).toUpperCase()}_H"
+    ];
+    hLines.addAll(_fileHeader(path, true));
+    hLines.add("");
+    cLines.add("#include \"${fileNameFromPath(path)}.h\"");
+    cLines.add("");
+
+    if (spriteTiles) {
+      hLines.add("extern const unsigned char sprite_tiles[];");
+      cLines.addAll(_exportTiles(TileBank.sprite, "sprite_tiles"));
+    }
+
+    hLines.add("#endif");
+
+    for (String line in cLines) {
+      cFile.writeAsStringSync("$line\n",mode:FileMode.append);
+    }
+    for (String line in hLines) {
+      hFile.writeAsStringSync("$line\n",mode:FileMode.append);
+    }
+
+
+  }
+
+  static List<String> _fileHeader(String path, bool h) {
+    List<String> out = [];
+    out.add("/// ${fileNameFromPath(path)}.${h ? "h" : "c"}");
+    out.add("/// Auto-generated file by gbte");
+    out.add("/// Generated on ${DateTime.now().toLocal().toIso8601String()}");
+    out.add("");
+    return out;
+  }
+
+  static List<String> _exportTiles(int tileBank, String varName) {
+    List<String> out = ["const unsigned char $varName[] = {"];
+
+    late String key;
+    late int offset;
+
+    if (tileBank == TileBank.sprite) {
+      key = Globals.exportSpriteTileIndex;
+      offset = 0;
+    } else if (tileBank == TileBank.shared) {
+      key = Globals.exportSharedTileIndex;
+      offset = Constants.tileBankSize;
+    } else {
+      key = Globals.exportBackgroundPaletteIndex;
+      offset = Constants.tileBankSize * 2;
+    }
+
+    int count = Globals.exportRanges[key]! + 1 + offset;
+
+    List<Tile> tiles = Globals.tiles.sublist(offset, count);
+    List<int> data = [];
+
+    for (Tile tile in tiles) {
+      data.addAll(tile.export().toList());
+    }
+
+    String row = "";
+    while (data.isNotEmpty) {
+      if (row.isEmpty) {
+        row = "    ";
+      }
+      int byte = data.removeAt(0);
+      String byteString =
+          "0x${byte.toRadixString(16).toUpperCase().padLeft(2, '0')}";
+      if (data.isNotEmpty) {
+        byteString = "$byteString,";
+      }
+      row = "$row$byteString";
+      if (row.length > _maxWidth) {
+        out.add(row);
+        row = "";
+      }
+    }
+    if (row.replaceAll(" ","").isNotEmpty) out.add(row);
+    
+    out.add("};");
+    return out;
   }
 }

@@ -159,7 +159,7 @@ class _ExportDialogState extends State<ExportDialog> {
   Widget build(BuildContext context) {
     return FullscreenDialog(
       title: "Export",
-      actions: [TextButton(onPressed: () => {}, child: const Text("Export"))],
+      actions: [TextButton(onPressed: () => {Navigator.of(context).pop(true)}, child: const Text("Export"))],
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

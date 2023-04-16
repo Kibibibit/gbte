@@ -66,4 +66,32 @@ class Tile extends Saveable {
     return out;
   }
 
+  @override
+  Uint8List export() {
+    List<int> out = [];
+
+    for (int y = 0; y < Tile.size; y++) {
+      int a = 0;
+      int b = 0;
+
+      for (int x = 0; x < Tile.size; x++) {
+        int val = get(x, y);
+        int aVal = val & 0x01;
+        int bVal = (val & 0x02) >> 1;
+        a <<= 1;
+        a += aVal;
+        b <<= 1;
+        b += bVal;
+        
+        
+      }
+
+      out.add(a);
+      out.add(b);
+
+    }
+    return Uint8List.fromList(out);
+
+  }
+
 }

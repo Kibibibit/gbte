@@ -56,4 +56,10 @@ class GBCColor extends Saveable {
     return Uint8List.fromList(out);
   }
   
+  @override
+  Uint8List export() {
+    // TODO: implement export
+    throw UnimplementedError();
+  }
+  
 }
