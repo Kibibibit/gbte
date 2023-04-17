@@ -69,11 +69,11 @@ class _TilePageState extends State<TilePage> {
     selectedPalette = Globals.tilePalettes[selectedTile];
     loadStream = Events.loadStream.stream.listen((_) => loadColors());
     tileStream = Events.tileEditStream.stream.listen((_) => loadColors());
-    redController = IntEditingController(max:31);
+    redController = IntEditingController(max: 31);
     greenController = IntEditingController(max: 31);
     blueController = IntEditingController(max: 31);
     loadColors();
-    
+
     _previousColor();
   }
 
@@ -158,37 +158,59 @@ class _TilePageState extends State<TilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          TileEditButtons(
-            tiles: [selectedTile],
-            metatileSize: 1,
+          Row(
+            children: [
+              TileEditButtons(
+                tiles: [selectedTile],
+                metatileSize: 1,
+              ),
+              TileDisplay(
+                tiles: [selectedTile],
+                metatileSize: 1,
+                primaryColor: primaryColor,
+                secondaryColor: secondaryColor,
+                edit: true,
+              ),
+            ],
           ),
-          TileDisplay(
-            tiles: [selectedTile],
-            metatileSize: 1,
-            primaryColor: primaryColor,
-            secondaryColor: secondaryColor,
-            edit: true,
-          ),
-          PaletteEditor(
-            onChangeRed: onChangeRed,
-            onChangeGreen: onChangeGreen,
-            onChangeBlue: onChangeBlue,
-            onChangeStart: onChangeStart,
-            onChangeEnd: onChangeEnd,
-            redController: redController,
-            greenController: greenController,
-            blueController: blueController,
-            red: red,
-            green: green,
-            blue: blue,
-            selectedPalette: selectedPalette,
-            selectedPrimaryColor: primaryColor,
-            onChangePrimaryColor: selectColorPrimary,
-            selectedSecondaryColor: secondaryColor,
-            onChangeSecondaryColor: selectColorSecondary,
-            secondarySelect: true,
-            onChangePalette: selectPalette,
-            paletteBank: TileBank.toPaletteBank(tileBank),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(border: Border.all()),
+                  width: 200,
+                  child: TileDisplay(
+                      tiles: List.generate(9, (_) => selectedTile),
+                      metatileSize: 3,
+                      primaryColor: primaryColor,
+                      border: false,
+                      secondaryColor: secondaryColor),
+                ),
+                PaletteEditor(
+                  onChangeRed: onChangeRed,
+                  onChangeGreen: onChangeGreen,
+                  onChangeBlue: onChangeBlue,
+                  onChangeStart: onChangeStart,
+                  onChangeEnd: onChangeEnd,
+                  redController: redController,
+                  greenController: greenController,
+                  blueController: blueController,
+                  red: red,
+                  green: green,
+                  blue: blue,
+                  selectedPalette: selectedPalette,
+                  selectedPrimaryColor: primaryColor,
+                  onChangePrimaryColor: selectColorPrimary,
+                  selectedSecondaryColor: secondaryColor,
+                  onChangeSecondaryColor: selectColorSecondary,
+                  secondarySelect: true,
+                  onChangePalette: selectPalette,
+                  paletteBank: TileBank.toPaletteBank(tileBank),
+                ),
+              ],
+            ),
           ),
           Flexible(
             child: Container(

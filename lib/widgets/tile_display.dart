@@ -18,6 +18,8 @@ class TileDisplay extends StatefulWidget {
   final bool edit;
   final bool border;
 
+  final Function(int index)? onHover;
+
   const TileDisplay({
     super.key,
     required this.tiles,
@@ -25,7 +27,7 @@ class TileDisplay extends StatefulWidget {
     required this.primaryColor,
     required this.secondaryColor,
     this.edit = false,
-    this.border = true,
+    this.border = true, this.onHover,
   });
 
   @override
@@ -44,7 +46,6 @@ class _TileDisplayState extends State<TileDisplay> {
 
   @override
   void initState() {
-    
     super.initState();
     _previousTiles();
     tileStream = Events.tileEditStream.stream.listen((tile) {
@@ -54,7 +55,7 @@ class _TileDisplayState extends State<TileDisplay> {
         });
       }
     });
-    loadStream = Events.loadStream.stream.listen((_){
+    loadStream = Events.loadStream.stream.listen((_) {
       _previousTiles();
       setState(() {
         repaint = true;
@@ -70,17 +71,24 @@ class _TileDisplayState extends State<TileDisplay> {
   }
 
   List<Uint8List> _mapTiles() {
-    return  widget.tiles.map((e) => Globals.tiles[e].save()).toList();
+    return widget.tiles.map((e) => Globals.tiles[e].save()).toList();
   }
 
   void _previousTiles() {
-     setState(() {
+    setState(() {
       previousTiles = _mapTiles();
     });
   }
 
   int _tilePos(double p, BuildContext context) =>
       (p / (_tileSize(context.size?.width ?? 0))).floor();
+
+  int _tileIndex(double x, double y, BuildContext context) {
+    int tx = _tilePos(x, context);
+    int ty = _tilePos(y, context);
+    return (tx / Tile.size).floor() * widget.metatileSize +
+        (ty / Tile.size).floor();
+  }
 
   void onPointerDown(PointerEvent event, BuildContext context) {
     if (!widget.edit) return;
@@ -91,7 +99,10 @@ class _TileDisplayState extends State<TileDisplay> {
   void onPointerUp() {
     if (!widget.edit) return;
     List<Uint8List> newTiles = _mapTiles();
-    TileAppEvent event = TileAppEvent(tileIndices: widget.tiles, previousTiles: previousTiles, nextTiles: newTiles);
+    TileAppEvent event = TileAppEvent(
+        tileIndices: widget.tiles,
+        previousTiles: previousTiles,
+        nextTiles: newTiles);
     Events.appEvent(event);
   }
 
@@ -113,6 +124,13 @@ class _TileDisplayState extends State<TileDisplay> {
     }
   }
 
+  void onHover(PointerEvent event, BuildContext context) {
+    if (widget.onHover != null) {
+      widget.onHover!(widget.tiles[_tileIndex(event.localPosition.dx, event.localPosition.dy, context)]);
+    }
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -123,11 +141,13 @@ class _TileDisplayState extends State<TileDisplay> {
             color: Colors.white,
             padding: EdgeInsets.all(widget.edit ? 2 : 0),
             child: MouseRegion(
-              cursor: widget.edit ? SystemMouseCursors.click : MouseCursor.defer,
+              cursor:
+                  widget.edit ? SystemMouseCursors.click : MouseCursor.defer,
               child: Listener(
+                onPointerHover: (event) => onHover(event, context),
                 onPointerDown: (event) => onPointerDown(event, context),
                 onPointerMove: (event) => onEvent(event, context),
-                onPointerUp: (_)=>onPointerUp(),
+                onPointerUp: (_) => onPointerUp(),
                 child: CustomPaint(
                   painter: TilePainter(
                       edit: widget.edit,
@@ -196,10 +216,10 @@ class TilePainter extends CustomPainter {
       }
     }
     if (border) {
-    painter.strokeWidth = 3.0;
-    painter.style = PaintingStyle.stroke;
-    painter.color = Colors.black;
-    canvas.drawRect(Rect.fromLTWH(drawX, drawY, tileSize, tileSize), painter);
+      painter.strokeWidth = 3.0;
+      painter.style = PaintingStyle.stroke;
+      painter.color = Colors.black;
+      canvas.drawRect(Rect.fromLTWH(drawX, drawY, tileSize, tileSize), painter);
     }
   }
 

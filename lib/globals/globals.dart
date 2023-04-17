@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/globals/events.dart';
+import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/widgets/dialog/unsaved_changes_dialog.dart';
@@ -29,6 +30,8 @@ class Globals {
           : "BKG ${index - 8}");
   static File? saveLocation;
   static bool saved = false;
+
+  static List<Metatile> metatiles = [];
 
   static const String exportToOneFile = "exportToOneFile";
   static const String tilesInOneFile = "tilesInOneFile";
