@@ -43,9 +43,12 @@ class Palette extends Saveable {
   }
   
   @override
-  Uint8List export() {
-    // TODO: implement export
-    throw UnimplementedError();
+  List<int> export() {
+    List<int> data = [];
+    for (GBCColor color in colors) {
+      data.addAll(color.export());
+    }
+    return data;
   }
   
 }

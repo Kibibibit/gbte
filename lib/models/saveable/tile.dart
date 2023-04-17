@@ -67,7 +67,7 @@ class Tile extends Saveable {
   }
 
   @override
-  Uint8List export() {
+  List<int> export() {
     List<int> out = [];
 
     for (int y = 0; y < Tile.size; y++) {
@@ -86,11 +86,11 @@ class Tile extends Saveable {
         
       }
 
-      out.add(a);
-      out.add(b);
+      out.add(a & 0xFF);
+      out.add(b & 0xFF);
 
     }
-    return Uint8List.fromList(out);
+    return out;
 
   }
 

@@ -122,6 +122,42 @@ class _ExportDialogState extends State<ExportDialog> {
     loadState();
   }
 
+  bool enableExportButton() {
+    List<bool> values = [];
+
+    if (Globals.exportFlags.values.every((element) => !element)) return false;
+
+    if (exportToOneFile) {
+      values.add(exportOneFileLocation.isNotEmpty);
+    } else {
+      if (tilesInOneFile) {
+        values.add(exportTilesLocation.isNotEmpty);
+      } else {
+        if (exportSprites) {
+          values.add(exportSpriteTilesLocation.isNotEmpty);
+        }
+        if (exportShared) {
+          values.add(exportSharedTilesLocation.isNotEmpty);
+        }
+        if (exportBackground) {
+          values.add(exportBackgroundTilesLocation.isNotEmpty);
+        }
+      }
+      if (palettesInOneFile) {
+        values.add(exportPalettesLocation.isNotEmpty);
+      } else {
+        if (exportPalettesSprite) {
+          values.add(exportSpritePalettesLocation.isNotEmpty);
+        }
+        if (exportPalettesBackground) {
+          values.add(exportBackgroundPalettesLocation.isNotEmpty);
+        }
+      }
+    }
+
+    return values.every((element) => element);
+  }
+
   Widget numberField(
       {required String labelText,
       required String key,
@@ -159,7 +195,13 @@ class _ExportDialogState extends State<ExportDialog> {
   Widget build(BuildContext context) {
     return FullscreenDialog(
       title: "Export",
-      actions: [TextButton(onPressed: () => {Navigator.of(context).pop(true)}, child: const Text("Export"))],
+      actions: [
+        TextButton(
+            onPressed: enableExportButton()
+                ? () => Navigator.of(context).pop(true)
+                : null,
+            child: const Text("Export"))
+      ],
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -287,7 +329,8 @@ class _ExportDialogState extends State<ExportDialog> {
                 labelText: "Export palettes location",
                 key: Globals.exportPalettesLocation,
                 value: exportPalettesLocation,
-                onChange: (v) => onFileChange(Globals.exportPalettesLocation, v),
+                onChange: (v) =>
+                    onFileChange(Globals.exportPalettesLocation, v),
                 enabled: !exportToOneFile && palettesInOneFile,
               ),
               const Divider(),
@@ -295,37 +338,47 @@ class _ExportDialogState extends State<ExportDialog> {
                 labelText: "Export sprite tiles location",
                 key: Globals.exportSpriteTilesLocation,
                 value: exportSpriteTilesLocation,
-                onChange: (v) => onFileChange(Globals.exportSpriteTilesLocation, v),
-                enabled: !exportToOneFile && !tilesInOneFile,
+                onChange: (v) =>
+                    onFileChange(Globals.exportSpriteTilesLocation, v),
+                enabled: !exportToOneFile && !tilesInOneFile && exportSprites,
               ),
               fileField(
                 labelText: "Export shared tiles location",
                 key: Globals.exportSharedTilesLocation,
                 value: exportSharedTilesLocation,
-                onChange: (v) => onFileChange(Globals.exportSharedTilesLocation, v),
-                enabled: !exportToOneFile && !tilesInOneFile,
+                onChange: (v) =>
+                    onFileChange(Globals.exportSharedTilesLocation, v),
+                enabled: !exportToOneFile && !tilesInOneFile && exportShared,
               ),
               fileField(
                 labelText: "Export background tiles location",
                 key: Globals.exportBackgroundTilesLocation,
                 value: exportBackgroundTilesLocation,
-                onChange: (v) => onFileChange(Globals.exportBackgroundTilesLocation, v),
-                enabled: !exportToOneFile && !tilesInOneFile,
+                onChange: (v) =>
+                    onFileChange(Globals.exportBackgroundTilesLocation, v),
+                enabled:
+                    !exportToOneFile && !tilesInOneFile && exportBackground,
               ),
               const Divider(),
               fileField(
                 labelText: "Export sprite palettes location",
                 key: Globals.exportSpritePalettesLocation,
                 value: exportSpritePalettesLocation,
-                onChange: (v) => onFileChange(Globals.exportSpritePalettesLocation, v),
-                enabled: !exportToOneFile && !palettesInOneFile,
+                onChange: (v) =>
+                    onFileChange(Globals.exportSpritePalettesLocation, v),
+                enabled: !exportToOneFile &&
+                    !palettesInOneFile &&
+                    exportPalettesSprite,
               ),
               fileField(
                 labelText: "Export background palettes location",
                 key: Globals.exportBackgroundPalettesLocation,
                 value: exportBackgroundPalettesLocation,
-                onChange: (v) => onFileChange(Globals.exportBackgroundPalettesLocation, v),
-                enabled: !exportToOneFile && !palettesInOneFile,
+                onChange: (v) =>
+                    onFileChange(Globals.exportBackgroundPalettesLocation, v),
+                enabled: !exportToOneFile &&
+                    !palettesInOneFile &&
+                    exportPalettesBackground,
               ),
             ],
           )

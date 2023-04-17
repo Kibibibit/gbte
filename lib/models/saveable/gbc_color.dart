@@ -57,9 +57,14 @@ class GBCColor extends Saveable {
   }
   
   @override
-  Uint8List export() {
-    // TODO: implement export
-    throw UnimplementedError();
+  List<int> export() {
+    int out = b & 31;
+    out <<= 5;
+    out += g & 31;
+    out <<= 5;
+    out += r & 31;
+
+    return [out];
   }
   
 }
