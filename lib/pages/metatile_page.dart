@@ -3,6 +3,8 @@ import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/color_select.dart';
+import 'package:gbte/widgets/metatile_tile_select.dart';
+import 'package:gbte/widgets/size_selector.dart';
 import 'package:gbte/widgets/tile_display.dart';
 import 'package:gbte/widgets/tile_edit_buttons.dart';
 
@@ -23,9 +25,10 @@ class _MetatilePageState extends State<MetatilePage> {
       Globals.metatiles.isNotEmpty ? Globals.metatiles[selectedMetatile] : null;
 
   void createMetatile() {
-    Globals.metatiles.add(Metatile(2, [0,1,2,3]));
+    Globals.metatiles.add(Metatile(2, [0, 1, 2, 3]));
     setState(() {
       selectedMetatile = Globals.metatiles.length - 1;
+      
     });
   }
 
@@ -55,6 +58,25 @@ class _MetatilePageState extends State<MetatilePage> {
       hoveredTile = index;
     });
   }
+
+  void metatileUpdate(int tile, int index) {
+    setState(() {
+      metatile!.tiles[index] = tile;
+    });
+  }
+
+  void onSizeChange(int size) {
+    setState(() {
+      metatile!.size = size;
+      while (metatile!.tiles.length < size*size) {
+        metatile!.tiles.add(metatile!.tiles.last+1);
+      }
+      while (metatile!.tiles.length > size*size) {
+        metatile!.tiles.removeLast();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -91,7 +113,13 @@ class _MetatilePageState extends State<MetatilePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      MetatileTileSelect(
+                        onChange: metatileUpdate,
+                        metatileIndex: selectedMetatile,
+                      ),
+                      SizeSelector(value: metatile!.size, onChange: onSizeChange),
                       SizedBox(
                         height: 50,
                         child: ColorSelect(

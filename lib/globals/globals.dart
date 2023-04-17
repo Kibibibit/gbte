@@ -142,6 +142,7 @@ class Globals {
       exportBackgroundPalettesLocation: "",
       exportSpritePalettesLocation: "",
     };
+    metatiles = [];
     Events.load("");
     Events.clearAppEventQueue();
   }

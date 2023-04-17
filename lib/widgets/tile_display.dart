@@ -86,8 +86,8 @@ class _TileDisplayState extends State<TileDisplay> {
   int _tileIndex(double x, double y, BuildContext context) {
     int tx = _tilePos(x, context);
     int ty = _tilePos(y, context);
-    return (tx / Tile.size).floor() * widget.metatileSize +
-        (ty / Tile.size).floor();
+    return (ty / Tile.size).floor() * widget.metatileSize +
+        (tx / Tile.size).floor();
   }
 
   void onPointerDown(PointerEvent event, BuildContext context) {
@@ -126,7 +126,9 @@ class _TileDisplayState extends State<TileDisplay> {
 
   void onHover(PointerEvent event, BuildContext context) {
     if (widget.onHover != null) {
-      widget.onHover!(widget.tiles[_tileIndex(event.localPosition.dx, event.localPosition.dy, context)]);
+      int tileIndex = _tileIndex(event.localPosition.dx, event.localPosition.dy, context);
+      widget.onHover!(widget.tiles[tileIndex]);
+      
     }
     
   }

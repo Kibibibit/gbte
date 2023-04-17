@@ -4,8 +4,8 @@ import 'package:gbte/models/saveable/saveable.dart';
 
 class Metatile extends Saveable {
 
-  final int size;
-  final List<int> tiles;
+  int size;
+  List<int> tiles;
 
   Metatile(this.size, this.tiles);
 

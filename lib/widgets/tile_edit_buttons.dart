@@ -24,6 +24,7 @@ class TileEditButtons extends StatelessWidget {
       List<Matrix2D> columns = [];
       for (int x = 0; x < metatileSize; x++) {
         columns.add(Globals.tiles[tiles[i]].matrix);
+        i++;
       }
       Matrix2D row = columns.removeAt(0);
       while (columns.isNotEmpty) {
@@ -41,8 +42,9 @@ class TileEditButtons extends StatelessWidget {
 
   void breakdownMetatile(Matrix2D metatileData, List<Uint8List> previousTiles) {
     int i = 0;
-    for (int x = 0; x < metatileSize; x++) {
-      for (int y = 0; y < metatileSize; y++) {
+
+    for (int y = 0; y < metatileSize; y++) {
+      for (int x = 0; x < metatileSize; x++) {
         int tx = x * Tile.size;
         int ty = y * Tile.size;
         Matrix2D tileMatrix =
@@ -110,9 +112,12 @@ class TileEditButtons extends StatelessWidget {
                 child: const Icon(Icons.flip),
               )),
           const Divider(),
-          IconButton(onPressed: ()=>rotate(false), icon: const Icon(Icons.rotate_90_degrees_cw_outlined)),
-          IconButton(onPressed: ()=>rotate(true), icon: const Icon(Icons.rotate_90_degrees_ccw)),
-          
+          IconButton(
+              onPressed: () => rotate(false),
+              icon: const Icon(Icons.rotate_90_degrees_cw_outlined)),
+          IconButton(
+              onPressed: () => rotate(true),
+              icon: const Icon(Icons.rotate_90_degrees_ccw)),
         ],
       ),
     );
