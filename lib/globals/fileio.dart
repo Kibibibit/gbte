@@ -14,6 +14,7 @@ import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/helpers/filename_from_path.dart';
 import 'package:gbte/helpers/int_to_bytes.dart';
 import 'package:gbte/helpers/string_to_bytes.dart';
+import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 import 'package:gbte/models/saveable/tile.dart';
@@ -195,6 +196,22 @@ abstract class FileIO {
           Globals.exportStrings[key] = value;
         }
 
+        for (int i = 0; i < Globals.tilePalettes.length; i++) {
+          Globals.tilePalettes[i] = data.removeAt(0);
+        }
+
+        int metatileCount = data.removeAt(0);
+
+        for (int i = 0; i < metatileCount; i++) {
+          int size = data.first;
+          int range = 1 + size*size*2;
+          List<int> metatileData = data.sublist(0,range);
+          data.removeRange(0,range);
+          Metatile metatile = Metatile(0, []);
+          metatile.load(Uint8List.fromList(metatileData));
+          Globals.metatiles.add(metatile);
+        }
+
         List<int> object = [];
         int objectSize = 0;
         int paletteCount = 0;
@@ -242,6 +259,14 @@ abstract class FileIO {
 
     for (String string in Globals.exportStrings.values) {
       out.addAll(stringToBytes(string));
+    }
+
+    out.addAll(Globals.tilePalettes);
+
+    out.add(Globals.metatiles.length);
+
+    for (Metatile metatile in Globals.metatiles) {
+      out.addAll(metatile.save());
     }
 
     for (Palette palette in Globals.palettes) {

@@ -16,9 +16,9 @@ class SizeSelector extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(onPressed: value > 2 ? () => change(-1) : null, icon: Icon(Icons.chevron_left)),
+        IconButton(onPressed: value > 2 ? () => change(-1) : null, icon:const Icon(Icons.chevron_left)),
         Text("$value x $value"),
-        IconButton(onPressed: value < 4 ? () => change(1) : null, icon: Icon(Icons.chevron_right)),
+        IconButton(onPressed: value < 4 ? () => change(1) : null, icon:const Icon(Icons.chevron_right)),
       ],
     );
   }
