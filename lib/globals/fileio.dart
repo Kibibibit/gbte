@@ -8,6 +8,7 @@ import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/palette_bank.dart';
 import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
+import 'package:gbte/globals/exports.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/extensions/time_stamp.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
@@ -25,6 +26,25 @@ import 'package:gbte/widgets/dialog/overwrite_file_dialog.dart';
 import 'package:gbte/widgets/dialog/unsaved_changes_dialog.dart';
 
 abstract class FileIO {
+  static Future<void> newFile(BuildContext context) async {
+    if (!Globals.saved) {
+      if (context.mounted) {
+        bool cont = await showDialog(
+                context: context,
+                builder: (context) => const UnsavedChangesDialog()) ??
+            false;
+        if (!cont) {
+          return;
+        }
+      }
+    }
+    Globals.newFile();
+    Exports.newFile();
+
+    Events.load("");
+    Events.clearAppEventQueue();
+  }
+
   static const List<String> _types = ["gbt"];
 
   static const List<int> _saveFileHeader = [
@@ -176,24 +196,28 @@ abstract class FileIO {
 
         if (!validHeader) {
           if (context.mounted) {
-            await showDialog(context: context, builder: (context) => const InvalidFileDialog(errorMessage: "File header did not match expected values! Has the file been edited by hand?"));
+            await showDialog(
+                context: context,
+                builder: (context) => const InvalidFileDialog(
+                    errorMessage:
+                        "File header did not match expected values! Has the file been edited by hand?"));
           }
           return;
         }
 
-        for (String key in Globals.exportFlags.keys) {
+        for (String key in Exports.exportFlags.keys) {
           int flag = data.removeAt(0);
-          Globals.exportFlags[key] = flag > 0;
+          Exports.exportFlags[key] = flag > 0;
         }
 
-        for (String key in Globals.exportRanges.keys) {
+        for (String key in Exports.exportRanges.keys) {
           int value = data.removeAt(0);
-          Globals.exportRanges[key] = value;
+          Exports.exportRanges[key] = value;
         }
 
-        for (String key in Globals.exportStrings.keys) {
+        for (String key in Exports.exportStrings.keys) {
           String value = _loadString(data);
-          Globals.exportStrings[key] = value;
+          Exports.exportStrings[key] = value;
         }
 
         for (int i = 0; i < Globals.tilePalettes.length; i++) {
@@ -204,9 +228,9 @@ abstract class FileIO {
 
         for (int i = 0; i < metatileCount; i++) {
           int size = data.first;
-          int range = 1 + size*size*2;
-          List<int> metatileData = data.sublist(0,range);
-          data.removeRange(0,range);
+          int range = 1 + size * size * 2;
+          List<int> metatileData = data.sublist(0, range);
+          data.removeRange(0, range);
           Metatile metatile = Metatile(0, []);
           metatile.load(Uint8List.fromList(metatileData));
           Globals.metatiles.add(metatile);
@@ -249,15 +273,15 @@ abstract class FileIO {
 
     out.addAll(_saveFileHeader);
 
-    for (bool value in Globals.exportFlags.values) {
+    for (bool value in Exports.exportFlags.values) {
       out.add(value ? 0x01 : 0x00);
     }
 
-    for (int value in Globals.exportRanges.values) {
+    for (int value in Exports.exportRanges.values) {
       out.add(value);
     }
 
-    for (String string in Globals.exportStrings.values) {
+    for (String string in Exports.exportStrings.values) {
       out.addAll(stringToBytes(string));
     }
 
@@ -279,7 +303,7 @@ abstract class FileIO {
     return out;
   }
 
-  static bool _flag(String key) => Globals.exportFlags[key] ?? false;
+  static bool _flag(String key) => Exports.exportFlags[key] ?? false;
 
   static Future<void> exportFile(BuildContext context) async {
     bool doExport = false;
@@ -291,60 +315,60 @@ abstract class FileIO {
       return;
     }
     if (!doExport) return;
-    if (_flag(Globals.exportToOneFile)) {
+    if (_flag(Exports.exportToOneFile)) {
       _exportFile(
-        Globals.exportStrings[Globals.exportOneFileLocation]!,
-        spriteTiles: _flag(Globals.exportSprites),
-        sharedTiles: _flag(Globals.exportShared),
-        backgroundTiles: _flag(Globals.exportBackground),
-        spritePalettes: _flag(Globals.exportPalettesSprite),
-        backgroundPalettes: _flag(Globals.exportPalettesBackground),
+        Exports.exportStrings[Exports.exportOneFileLocation]!,
+        spriteTiles: _flag(Exports.exportSprites),
+        sharedTiles: _flag(Exports.exportShared),
+        backgroundTiles: _flag(Exports.exportBackground),
+        spritePalettes: _flag(Exports.exportPalettesSprite),
+        backgroundPalettes: _flag(Exports.exportPalettesBackground),
       );
     } else {
-      if (_flag(Globals.tilesInOneFile)) {
+      if (_flag(Exports.tilesInOneFile)) {
         _exportFile(
-          Globals.exportStrings[Globals.exportTilesLocation]!,
-          spriteTiles: _flag(Globals.exportSprites),
-          sharedTiles: _flag(Globals.exportShared),
-          backgroundTiles: _flag(Globals.exportBackground),
+          Exports.exportStrings[Exports.exportTilesLocation]!,
+          spriteTiles: _flag(Exports.exportSprites),
+          sharedTiles: _flag(Exports.exportShared),
+          backgroundTiles: _flag(Exports.exportBackground),
         );
       } else {
-        if (_flag(Globals.exportSprites)) {
+        if (_flag(Exports.exportSprites)) {
           _exportFile(
-            Globals.exportStrings[Globals.exportSpriteTilesLocation]!,
+            Exports.exportStrings[Exports.exportSpriteTilesLocation]!,
             spriteTiles: true,
           );
         }
-        if (_flag(Globals.exportShared)) {
+        if (_flag(Exports.exportShared)) {
           _exportFile(
-            Globals.exportStrings[Globals.exportSharedTilesLocation]!,
+            Exports.exportStrings[Exports.exportSharedTilesLocation]!,
             sharedTiles: true,
           );
         }
-        if (_flag(Globals.exportBackground)) {
+        if (_flag(Exports.exportBackground)) {
           _exportFile(
-            Globals.exportStrings[Globals.exportBackgroundTilesLocation]!,
+            Exports.exportStrings[Exports.exportBackgroundTilesLocation]!,
             backgroundTiles: true,
           );
         }
       }
 
-      if (_flag(Globals.palettesInOneFile)) {
+      if (_flag(Exports.palettesInOneFile)) {
         _exportFile(
-          Globals.exportStrings[Globals.exportPalettesLocation]!,
-          spritePalettes: _flag(Globals.exportPalettesSprite),
-          backgroundPalettes: _flag(Globals.exportPalettesBackground),
+          Exports.exportStrings[Exports.exportPalettesLocation]!,
+          spritePalettes: _flag(Exports.exportPalettesSprite),
+          backgroundPalettes: _flag(Exports.exportPalettesBackground),
         );
       } else {
-        if (_flag(Globals.exportPalettesSprite)) {
+        if (_flag(Exports.exportPalettesSprite)) {
           _exportFile(
-            Globals.exportStrings[Globals.exportSpritePalettesLocation]!,
+            Exports.exportStrings[Exports.exportSpritePalettesLocation]!,
             spritePalettes: true,
           );
         }
-        if (_flag(Globals.exportPalettesBackground)) {
+        if (_flag(Exports.exportPalettesBackground)) {
           _exportFile(
-              Globals.exportStrings[Globals.exportBackgroundPalettesLocation]!,
+              Exports.exportStrings[Exports.exportBackgroundPalettesLocation]!,
               backgroundPalettes: true);
         }
       }
@@ -466,12 +490,12 @@ abstract class FileIO {
 
     if (paletteBank == PaletteBank.sprite) {
       offset = 0;
-      key = Globals.exportSpritePaletteIndex;
+      key = Exports.exportSpritePaletteIndex;
     } else {
       offset = Constants.paletteBankSize;
-      key = Globals.exportBackgroundPaletteIndex;
+      key = Exports.exportBackgroundPaletteIndex;
     }
-    int count = Globals.exportRanges[key]! + 1 + offset;
+    int count = Exports.exportRanges[key]! + 1 + offset;
 
     return _exportSaveables(
         offset, count, Globals.palettes, 2, "uint16_t", varName);
@@ -482,17 +506,17 @@ abstract class FileIO {
     late int offset;
 
     if (tileBank == TileBank.sprite) {
-      key = Globals.exportSpriteTileIndex;
+      key = Exports.exportSpriteTileIndex;
       offset = 0;
     } else if (tileBank == TileBank.shared) {
-      key = Globals.exportSharedTileIndex;
+      key = Exports.exportSharedTileIndex;
       offset = Constants.tileBankSize;
     } else {
-      key = Globals.exportBackgroundPaletteIndex;
+      key = Exports.exportBackgroundPaletteIndex;
       offset = Constants.tileBankSize * 2;
     }
 
-    int count = Globals.exportRanges[key]! + 1 + offset;
+    int count = Exports.exportRanges[key]! + 1 + offset;
 
     return _exportSaveables(
         offset, count, Globals.tiles, 1, "unsigned char", varName);

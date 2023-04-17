@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gbte/components/int_editing_controller.dart';
-import 'package:gbte/globals/globals.dart';
+import 'package:gbte/globals/exports.dart';
 import 'package:gbte/widgets/dialog/fullscreen_dialog.dart';
 import 'package:gbte/widgets/file_field.dart';
 import 'package:gbte/widgets/int_field.dart';
@@ -50,82 +50,82 @@ class _ExportDialogState extends State<ExportDialog> {
     loadState();
     exportSpriteTilesController = IntEditingController(
         max: 255,
-        intValue: Globals.exportRanges[Globals.exportSpriteTileIndex]!);
+        intValue: Exports.exportRanges[Exports.exportSpriteTileIndex]!);
     exportSharedTilesController = IntEditingController(
         max: 255,
-        intValue: Globals.exportRanges[Globals.exportSharedTileIndex]!);
+        intValue: Exports.exportRanges[Exports.exportSharedTileIndex]!);
     exportBackgroundTilesController = IntEditingController(
         max: 255,
-        intValue: Globals.exportRanges[Globals.exportBackgroundTileIndex]!);
+        intValue: Exports.exportRanges[Exports.exportBackgroundTileIndex]!);
     exportSpritePalettesController = IntEditingController(
         max: 7,
-        intValue: Globals.exportRanges[Globals.exportSpritePaletteIndex]!);
+        intValue: Exports.exportRanges[Exports.exportSpritePaletteIndex]!);
     exportBackgroundPalettesController = IntEditingController(
         max: 7,
-        intValue: Globals.exportRanges[Globals.exportBackgroundPaletteIndex]!);
+        intValue: Exports.exportRanges[Exports.exportBackgroundPaletteIndex]!);
   }
 
   void loadState() {
     setState(() {
-      exportToOneFile = Globals.exportFlags[Globals.exportToOneFile]!;
-      tilesInOneFile = Globals.exportFlags[Globals.tilesInOneFile]!;
-      palettesInOneFile = Globals.exportFlags[Globals.palettesInOneFile]!;
-      exportSprites = Globals.exportFlags[Globals.exportSprites]!;
-      exportShared = Globals.exportFlags[Globals.exportShared]!;
-      exportBackground = Globals.exportFlags[Globals.exportBackground]!;
-      exportPalettesSprite = Globals.exportFlags[Globals.exportPalettesSprite]!;
+      exportToOneFile = Exports.exportFlags[Exports.exportToOneFile]!;
+      tilesInOneFile = Exports.exportFlags[Exports.tilesInOneFile]!;
+      palettesInOneFile = Exports.exportFlags[Exports.palettesInOneFile]!;
+      exportSprites = Exports.exportFlags[Exports.exportSprites]!;
+      exportShared = Exports.exportFlags[Exports.exportShared]!;
+      exportBackground = Exports.exportFlags[Exports.exportBackground]!;
+      exportPalettesSprite = Exports.exportFlags[Exports.exportPalettesSprite]!;
       exportPalettesBackground =
-          Globals.exportFlags[Globals.exportPalettesBackground]!;
+          Exports.exportFlags[Exports.exportPalettesBackground]!;
       exportSpriteTileIndex =
-          Globals.exportRanges[Globals.exportSpriteTileIndex]!;
+          Exports.exportRanges[Exports.exportSpriteTileIndex]!;
       exportSharedTileIndex =
-          Globals.exportRanges[Globals.exportSharedTileIndex]!;
+          Exports.exportRanges[Exports.exportSharedTileIndex]!;
       exportBackgroundTileIndex =
-          Globals.exportRanges[Globals.exportBackgroundTileIndex]!;
+          Exports.exportRanges[Exports.exportBackgroundTileIndex]!;
       exportSpritePaletteIndex =
-          Globals.exportRanges[Globals.exportSpritePaletteIndex]!;
+          Exports.exportRanges[Exports.exportSpritePaletteIndex]!;
       exportBackgroundPaletteIndex =
-          Globals.exportRanges[Globals.exportBackgroundPaletteIndex]!;
+          Exports.exportRanges[Exports.exportBackgroundPaletteIndex]!;
 
       exportOneFileLocation =
-          Globals.exportStrings[Globals.exportOneFileLocation]!;
-      exportTilesLocation = Globals.exportStrings[Globals.exportTilesLocation]!;
+          Exports.exportStrings[Exports.exportOneFileLocation]!;
+      exportTilesLocation = Exports.exportStrings[Exports.exportTilesLocation]!;
       exportPalettesLocation =
-          Globals.exportStrings[Globals.exportPalettesLocation]!;
+          Exports.exportStrings[Exports.exportPalettesLocation]!;
       exportSpriteTilesLocation =
-          Globals.exportStrings[Globals.exportSpriteTilesLocation]!;
+          Exports.exportStrings[Exports.exportSpriteTilesLocation]!;
       exportSharedTilesLocation =
-          Globals.exportStrings[Globals.exportSharedTilesLocation]!;
+          Exports.exportStrings[Exports.exportSharedTilesLocation]!;
       exportBackgroundTilesLocation =
-          Globals.exportStrings[Globals.exportBackgroundTilesLocation]!;
+          Exports.exportStrings[Exports.exportBackgroundTilesLocation]!;
       exportSpritePalettesLocation =
-          Globals.exportStrings[Globals.exportSpritePalettesLocation]!;
+          Exports.exportStrings[Exports.exportSpritePalettesLocation]!;
       exportBackgroundPalettesLocation =
-          Globals.exportStrings[Globals.exportBackgroundPalettesLocation]!;
+          Exports.exportStrings[Exports.exportBackgroundPalettesLocation]!;
     });
   }
 
   void onFlagChange(String key, bool? value) {
     if (value != null) {
-      Globals.exportFlags[key] = value;
+      Exports.exportFlags[key] = value;
       loadState();
     }
   }
 
   void onIntChange(String key, int value) {
-    Globals.exportRanges[key] = value;
+    Exports.exportRanges[key] = value;
     loadState();
   }
 
   void onFileChange(String key, String value) {
-    Globals.exportStrings[key] = value;
+    Exports.exportStrings[key] = value;
     loadState();
   }
 
   bool enableExportButton() {
     List<bool> values = [];
 
-    if (Globals.exportFlags.values.every((element) => !element)) return false;
+    if (Exports.exportFlags.values.every((element) => !element)) return false;
 
     if (exportToOneFile) {
       values.add(exportOneFileLocation.isNotEmpty);
@@ -171,7 +171,7 @@ class _ExportDialogState extends State<ExportDialog> {
         child: IntField(
           controller: controller,
           onChange: onChange,
-          previousValue: Globals.exportRanges[key] ?? 0,
+          previousValue: Exports.exportRanges[key] ?? 0,
           decoration: InputDecoration(labelText: labelText),
           enabled: enabled,
         ));
@@ -211,16 +211,16 @@ class _ExportDialogState extends State<ExportDialog> {
               LabelledCheckbox(
                   label: "Export as one File",
                   value: exportToOneFile,
-                  onChanged: (v) => onFlagChange(Globals.exportToOneFile, v)),
+                  onChanged: (v) => onFlagChange(Exports.exportToOneFile, v)),
               LabelledCheckbox(
                   label: "Export tiles in one file",
                   value: tilesInOneFile,
-                  onChanged: (v) => onFlagChange(Globals.tilesInOneFile, v),
+                  onChanged: (v) => onFlagChange(Exports.tilesInOneFile, v),
                   enabled: !exportToOneFile),
               LabelledCheckbox(
                   label: "Export palettes in one file",
                   value: palettesInOneFile,
-                  onChanged: (v) => onFlagChange(Globals.palettesInOneFile, v),
+                  onChanged: (v) => onFlagChange(Exports.palettesInOneFile, v),
                   enabled: !exportToOneFile),
               const Divider(),
             ],
@@ -232,76 +232,76 @@ class _ExportDialogState extends State<ExportDialog> {
               LabelledCheckbox(
                 label: "Export Sprite Tiles",
                 value: exportSprites,
-                onChanged: (v) => onFlagChange(Globals.exportSprites, v),
+                onChanged: (v) => onFlagChange(Exports.exportSprites, v),
               ),
               numberField(
                 labelText: "Export sprite tiles up to:",
-                key: Globals.exportSpriteTileIndex,
+                key: Exports.exportSpriteTileIndex,
                 min: 0,
                 max: 255,
                 onChange: (value) =>
-                    onIntChange(Globals.exportSpriteTileIndex, value),
+                    onIntChange(Exports.exportSpriteTileIndex, value),
                 controller: exportSpriteTilesController,
                 enabled: exportSprites,
               ),
               LabelledCheckbox(
                 label: "Export Shared Tiles",
                 value: exportShared,
-                onChanged: (v) => onFlagChange(Globals.exportShared, v),
+                onChanged: (v) => onFlagChange(Exports.exportShared, v),
               ),
               numberField(
                 labelText: "Export shared tiles up to:",
-                key: Globals.exportSharedTileIndex,
+                key: Exports.exportSharedTileIndex,
                 min: 0,
                 max: 255,
                 onChange: (value) =>
-                    onIntChange(Globals.exportSharedTileIndex, value),
+                    onIntChange(Exports.exportSharedTileIndex, value),
                 controller: exportSharedTilesController,
                 enabled: exportShared,
               ),
               LabelledCheckbox(
                 label: "Export Background Tiles",
                 value: exportBackground,
-                onChanged: (v) => onFlagChange(Globals.exportBackground, v),
+                onChanged: (v) => onFlagChange(Exports.exportBackground, v),
               ),
               numberField(
                   labelText: "Export background tiles up to:",
-                  key: Globals.exportSharedTileIndex,
+                  key: Exports.exportSharedTileIndex,
                   min: 0,
                   max: 255,
                   onChange: (value) =>
-                      onIntChange(Globals.exportBackgroundTileIndex, value),
+                      onIntChange(Exports.exportBackgroundTileIndex, value),
                   controller: exportBackgroundTilesController,
                   enabled: exportBackground),
               LabelledCheckbox(
                 label: "Export Sprite Palettes",
                 value: exportPalettesSprite,
-                onChanged: (v) => onFlagChange(Globals.exportPalettesSprite, v),
+                onChanged: (v) => onFlagChange(Exports.exportPalettesSprite, v),
               ),
               numberField(
                 labelText: "Export sprite palettes up to:",
-                key: Globals.exportSpritePaletteIndex,
+                key: Exports.exportSpritePaletteIndex,
                 controller: exportSpritePalettesController,
                 min: 0,
                 max: 7,
                 onChange: (value) =>
-                    onIntChange(Globals.exportSpritePaletteIndex, value),
+                    onIntChange(Exports.exportSpritePaletteIndex, value),
                 enabled: exportPalettesSprite,
               ),
               LabelledCheckbox(
                 label: "Export Background Palettes",
                 value: exportPalettesBackground,
                 onChanged: (v) =>
-                    onFlagChange(Globals.exportPalettesBackground, v),
+                    onFlagChange(Exports.exportPalettesBackground, v),
               ),
               numberField(
                 labelText: "Export background palettes up to:",
-                key: Globals.exportBackgroundPaletteIndex,
+                key: Exports.exportBackgroundPaletteIndex,
                 controller: exportBackgroundPalettesController,
                 min: 0,
                 max: 7,
                 onChange: (value) =>
-                    onIntChange(Globals.exportBackgroundPaletteIndex, value),
+                    onIntChange(Exports.exportBackgroundPaletteIndex, value),
                 enabled: exportPalettesBackground,
               )
             ],
@@ -312,70 +312,70 @@ class _ExportDialogState extends State<ExportDialog> {
             children: [
               fileField(
                 labelText: "Export All Location",
-                key: Globals.exportOneFileLocation,
+                key: Exports.exportOneFileLocation,
                 value: exportOneFileLocation,
-                onChange: (v) => onFileChange(Globals.exportOneFileLocation, v),
+                onChange: (v) => onFileChange(Exports.exportOneFileLocation, v),
                 enabled: exportToOneFile,
               ),
               const Divider(),
               fileField(
                 labelText: "Export tiles location",
-                key: Globals.exportTilesLocation,
+                key: Exports.exportTilesLocation,
                 value: exportTilesLocation,
-                onChange: (v) => onFileChange(Globals.exportTilesLocation, v),
+                onChange: (v) => onFileChange(Exports.exportTilesLocation, v),
                 enabled: !exportToOneFile && tilesInOneFile,
               ),
               fileField(
                 labelText: "Export palettes location",
-                key: Globals.exportPalettesLocation,
+                key: Exports.exportPalettesLocation,
                 value: exportPalettesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportPalettesLocation, v),
+                    onFileChange(Exports.exportPalettesLocation, v),
                 enabled: !exportToOneFile && palettesInOneFile,
               ),
               const Divider(),
               fileField(
                 labelText: "Export sprite tiles location",
-                key: Globals.exportSpriteTilesLocation,
+                key: Exports.exportSpriteTilesLocation,
                 value: exportSpriteTilesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportSpriteTilesLocation, v),
+                    onFileChange(Exports.exportSpriteTilesLocation, v),
                 enabled: !exportToOneFile && !tilesInOneFile && exportSprites,
               ),
               fileField(
                 labelText: "Export shared tiles location",
-                key: Globals.exportSharedTilesLocation,
+                key: Exports.exportSharedTilesLocation,
                 value: exportSharedTilesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportSharedTilesLocation, v),
+                    onFileChange(Exports.exportSharedTilesLocation, v),
                 enabled: !exportToOneFile && !tilesInOneFile && exportShared,
               ),
               fileField(
                 labelText: "Export background tiles location",
-                key: Globals.exportBackgroundTilesLocation,
+                key: Exports.exportBackgroundTilesLocation,
                 value: exportBackgroundTilesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportBackgroundTilesLocation, v),
+                    onFileChange(Exports.exportBackgroundTilesLocation, v),
                 enabled:
                     !exportToOneFile && !tilesInOneFile && exportBackground,
               ),
               const Divider(),
               fileField(
                 labelText: "Export sprite palettes location",
-                key: Globals.exportSpritePalettesLocation,
+                key: Exports.exportSpritePalettesLocation,
                 value: exportSpritePalettesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportSpritePalettesLocation, v),
+                    onFileChange(Exports.exportSpritePalettesLocation, v),
                 enabled: !exportToOneFile &&
                     !palettesInOneFile &&
                     exportPalettesSprite,
               ),
               fileField(
                 labelText: "Export background palettes location",
-                key: Globals.exportBackgroundPalettesLocation,
+                key: Exports.exportBackgroundPalettesLocation,
                 value: exportBackgroundPalettesLocation,
                 onChange: (v) =>
-                    onFileChange(Globals.exportBackgroundPalettesLocation, v),
+                    onFileChange(Exports.exportBackgroundPalettesLocation, v),
                 enabled: !exportToOneFile &&
                     !palettesInOneFile &&
                     exportPalettesBackground,
