@@ -40,6 +40,7 @@ class Globals {
 
   static bool saved = false;
 
+  static List<Metatile> metasprites = [];
   static List<Metatile> metatiles = [];
 
   static void newFile() {
@@ -56,6 +57,7 @@ class Globals {
     saveLocation = null;
     saved = false;
 
+    metasprites = [];
     metatiles = [];
   }
 }

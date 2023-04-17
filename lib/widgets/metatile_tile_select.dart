@@ -11,7 +11,7 @@ class MetatileTileSelect extends StatelessWidget {
 
   const MetatileTileSelect({super.key, required this.metatileIndex, required this.onChange});
 
-  Metatile get metatile => Globals.metatiles[metatileIndex];
+  Metatile get metatile => Globals.metasprites[metatileIndex];
 
 
   void onClick(int index, BuildContext context) async {

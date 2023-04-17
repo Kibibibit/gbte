@@ -22,12 +22,12 @@ class _MetatilePageState extends State<MetatilePage> {
   late int hoveredTile;
 
   Metatile? get metatile =>
-      Globals.metatiles.isNotEmpty ? Globals.metatiles[selectedMetatile] : null;
+      Globals.metasprites.isNotEmpty ? Globals.metasprites[selectedMetatile] : null;
 
   void createMetatile() {
-    Globals.metatiles.add(Metatile(2, [0, 1, 2, 3]));
+    Globals.metasprites.add(Metatile(2, [0, 1, 2, 3]));
     setState(() {
-      selectedMetatile = Globals.metatiles.length - 1;
+      selectedMetatile = Globals.metasprites.length - 1;
       
     });
   }

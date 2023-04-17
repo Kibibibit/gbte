@@ -233,7 +233,7 @@ abstract class FileIO {
           data.removeRange(0, range);
           Metatile metatile = Metatile(0, []);
           metatile.load(Uint8List.fromList(metatileData));
-          Globals.metatiles.add(metatile);
+          Globals.metasprites.add(metatile);
         }
 
         List<int> object = [];
@@ -287,9 +287,9 @@ abstract class FileIO {
 
     out.addAll(Globals.tilePalettes);
 
-    out.add(Globals.metatiles.length);
+    out.add(Globals.metasprites.length);
 
-    for (Metatile metatile in Globals.metatiles) {
+    for (Metatile metatile in Globals.metasprites) {
       out.addAll(metatile.save());
     }
 
