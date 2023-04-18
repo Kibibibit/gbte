@@ -3,6 +3,7 @@ import 'package:gbte/globals/globals.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/widgets/dialog/tile_select_dialog.dart';
+import 'package:gbte/widgets/stroke_text.dart';
 import 'package:gbte/widgets/tile_display.dart';
 
 class MetatileTileSelect extends StatefulWidget {
@@ -82,15 +83,8 @@ class _MetatileTileSelectState extends State<MetatileTileSelect> {
                           ? const Color(0x330000FF)
                           : Colors.transparent,
                       child: Center(
-                        child: Text(
+                        child: StrokeText(
                           metatile.tiles[index].toByteString(1),
-                          style: TextStyle(
-                              color: index == hoverTile
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontWeight: index == hoverTile
-                                  ? FontWeight.bold
-                                  : FontWeight.normal),
                         ),
                       ),
                     )

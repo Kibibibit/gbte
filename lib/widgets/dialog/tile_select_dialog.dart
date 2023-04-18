@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/widgets/dialog/fullscreen_dialog.dart';
+import 'package:gbte/widgets/stroke_text.dart';
 import 'package:gbte/widgets/tile_display.dart';
 
 class TileSelectDialog extends StatefulWidget {
@@ -72,14 +73,8 @@ class _TileSelectDialogState extends State<TileSelectDialog> {
                             : Colors.transparent,
                       ),
                       child: Center(
-                        child: Text(
-                          _indexFromBank(index).toByteString(1),
-                          style: TextStyle(
-                            color: index == currentTile ? Colors.white : Colors.black,
-                              fontWeight: index == currentTile
-                                  ? FontWeight.bold
-                                  : FontWeight.normal),
-                        ),
+                        child:
+                            StrokeText(_indexFromBank(index).toByteString(1)),
                       ),
                     )
                   ],
