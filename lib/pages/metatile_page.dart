@@ -3,6 +3,7 @@ import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/color_select.dart';
+import 'package:gbte/widgets/metatile_select.dart';
 import 'package:gbte/widgets/metatile_tile_select.dart';
 import 'package:gbte/widgets/size_selector.dart';
 import 'package:gbte/widgets/tile_display.dart';
@@ -21,14 +22,30 @@ class _MetatilePageState extends State<MetatilePage> {
   late int selectedMetatile;
   late int hoveredTile;
 
-  Metatile? get metatile =>
-      Globals.metasprites.isNotEmpty ? Globals.metasprites[selectedMetatile] : null;
+  Metatile? get metatile => Globals.metasprites.isNotEmpty
+      ? Globals.metasprites[selectedMetatile]
+      : null;
 
   void createMetatile() {
     Globals.metasprites.add(Metatile(2, [0, 1, 2, 3]));
     setState(() {
       selectedMetatile = Globals.metasprites.length - 1;
-      
+    });
+  }
+
+  void deleteMetatile(int index) {
+    setState(() {
+      Globals.metasprites.removeAt(index);
+      while (selectedMetatile >= Globals.metasprites.length &&
+          selectedMetatile != 0) {
+        selectedMetatile--;
+      }
+    });
+  }
+
+  void selectTile(int tile) {
+    setState(() {
+      selectedMetatile = tile;
     });
   }
 
@@ -68,14 +85,17 @@ class _MetatilePageState extends State<MetatilePage> {
   void onSizeChange(int size) {
     setState(() {
       metatile!.size = size;
-      while (metatile!.tiles.length < size*size) {
-        metatile!.tiles.add(metatile!.tiles.last+1);
+      while (metatile!.tiles.length < size * size) {
+        metatile!.tiles.add(metatile!.tiles.last + 1);
       }
-      while (metatile!.tiles.length > size*size) {
+      while (metatile!.tiles.length > size * size) {
         metatile!.tiles.removeLast();
       }
     });
   }
+
+  Widget createButton() => TextButton(
+      onPressed: () => createMetatile(), child: const Text("Create metatile"));
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +103,7 @@ class _MetatilePageState extends State<MetatilePage> {
       child: metatile == null
           ? Center(
               child: Column(
-                children: [
-                  const Text("No metatiles!"),
-                  TextButton(
-                      onPressed: () => createMetatile(),
-                      child: const Text("Create metatile"))
-                ],
+                children: [const Text("No metatiles!"), createButton()],
               ),
             )
           : Row(
@@ -115,11 +130,19 @@ class _MetatilePageState extends State<MetatilePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MetatileTileSelect(
-                        onChange: metatileUpdate,
-                        metatileIndex: selectedMetatile,
+                      Column(
+                        children: [
+                          MetatileTileSelect(
+                            onChange: metatileUpdate,
+                            metatileIndex: selectedMetatile,
+                          ),
+                          SizeSelector(
+                              value: metatile!.size, onChange: onSizeChange),
+                        ],
                       ),
-                      SizeSelector(value: metatile!.size, onChange: onSizeChange),
+                      TextButton(
+                          onPressed: () => deleteMetatile(selectedMetatile),
+                          child: const Text("Delete Tile")),
                       SizedBox(
                         height: 50,
                         child: ColorSelect(
@@ -133,7 +156,21 @@ class _MetatilePageState extends State<MetatilePage> {
                       )
                     ],
                   ),
-                )
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Column(
+                    children: [
+                      createButton(),
+                      Flexible(
+                        child: MetatileSelect(
+                          selected: selectedMetatile,
+                          onChange: selectTile,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
     );
