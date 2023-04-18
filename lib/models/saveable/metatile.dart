@@ -10,12 +10,6 @@ class Metatile extends Saveable {
   Metatile(this.size, this.tiles);
 
   @override
-  List<int> export() {
-    // TODO: implement export
-    throw UnimplementedError();
-  }
-
-  @override
   void load(Uint8List data) {
     List<int> bytes = data.toList();
     tiles = [];

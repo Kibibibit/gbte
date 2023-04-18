@@ -15,6 +15,7 @@ import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/helpers/filename_from_path.dart';
 import 'package:gbte/helpers/int_to_bytes.dart';
 import 'package:gbte/helpers/string_to_bytes.dart';
+import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
@@ -450,14 +451,14 @@ abstract class FileIO {
     return out;
   }
 
-  static List<String> _exportSaveables(int from, int to, List<Saveable> set,
+  static List<String> _exportExportables(int from, int to, List<Exportable> set,
       int bytes, String type, String varName) {
     List<String> out = ["const $type $varName[] = {"];
 
-    List<Saveable> items = set.sublist(from, to);
+    List<Exportable> items = set.sublist(from, to);
 
     List<int> data = [];
-    for (Saveable item in items) {
+    for (Exportable item in items) {
       data.addAll(item.export().toList());
     }
 
@@ -497,7 +498,7 @@ abstract class FileIO {
     }
     int count = Exports.exportRanges[key]! + 1 + offset;
 
-    return _exportSaveables(
+    return _exportExportables(
         offset, count, Globals.palettes, 2, "uint16_t", varName);
   }
 
@@ -518,7 +519,7 @@ abstract class FileIO {
 
     int count = Exports.exportRanges[key]! + 1 + offset;
 
-    return _exportSaveables(
+    return _exportExportables(
         offset, count, Globals.tiles, 1, "unsigned char", varName);
   }
 }

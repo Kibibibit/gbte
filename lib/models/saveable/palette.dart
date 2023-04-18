@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/gbc_color.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 
-class Palette extends Saveable {
+class Palette extends Exportable {
   late List<GBCColor> colors;
 
   Palette({required this.colors})

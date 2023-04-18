@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/helpers/map_range.dart';
-import 'package:gbte/models/saveable/saveable.dart';
+import 'package:gbte/models/saveable/exportable.dart';
 
-class GBCColor extends Saveable {
+class GBCColor extends Exportable {
   static const int minC = 0;
   static const int maxC = 31;
 

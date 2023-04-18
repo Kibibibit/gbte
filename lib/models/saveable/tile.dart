@@ -1,9 +1,10 @@
 
 import 'dart:typed_data';
 import 'package:gbte/models/data_structures/matrix2d.dart';
+import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 
-class Tile extends Saveable {
+class Tile extends Exportable {
   static const int size = 8;
 
   late Matrix2D _data;

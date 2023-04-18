@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         home: const RootPage(
           pages: {
             "Tiles": TilePage(),
-            "Metatiles" : MetatilePage(),
+            "Metasprites" : MetatilePage(),
           },
         ));
   }
