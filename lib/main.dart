@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/globals/globals.dart';
 import 'package:gbte/pages/metatile_page.dart';
 import 'package:gbte/pages/root_page.dart';
 import 'package:gbte/pages/tile_page.dart';
@@ -18,10 +19,10 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: const RootPage(
+        home: RootPage(
           pages: {
-            "Tiles": TilePage(),
-            "Metasprites" : MetatilePage(),
+            "Tiles": const TilePage(),
+            "Metasprites" : MetatilePage(metatiles: Globals.metasprites,),
           },
         ));
   }

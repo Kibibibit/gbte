@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/pages/base_page.dart';
@@ -10,7 +11,9 @@ import 'package:gbte/widgets/tile_display.dart';
 import 'package:gbte/widgets/tile_edit_buttons.dart';
 
 class MetatilePage extends StatefulWidget {
-  const MetatilePage({super.key});
+  const MetatilePage({super.key, required this.metatiles});
+
+  final List<Metatile> metatiles;
 
   @override
   State<MetatilePage> createState() => _MetatilePageState();
@@ -22,20 +25,20 @@ class _MetatilePageState extends State<MetatilePage> {
   late int selectedMetatile;
   late int hoveredTile;
 
-  Metatile? get metatile => Globals.metasprites.isNotEmpty
-      ? Globals.metasprites[selectedMetatile]
+  Metatile? get metatile => widget.metatiles.isNotEmpty
+      ? widget.metatiles[selectedMetatile]
       : null;
 
   void createMetatile() {
     Globals.metasprites.add(Metatile(2, [0, 1, 2, 3]));
     setState(() {
-      selectedMetatile = Globals.metasprites.length - 1;
+      selectedMetatile = widget.metatiles.length - 1;
     });
   }
 
   void deleteMetatile(int index) {
     setState(() {
-      Globals.metasprites.removeAt(index);
+      widget.metatiles.removeAt(index);
       while (selectedMetatile >= Globals.metasprites.length &&
           selectedMetatile != 0) {
         selectedMetatile--;
@@ -133,6 +136,7 @@ class _MetatilePageState extends State<MetatilePage> {
                       Column(
                         children: [
                           MetatileTileSelect(
+                            tileBank: TileBank.sprite,
                             onChange: metatileUpdate,
                             metatileIndex: selectedMetatile,
                           ),
