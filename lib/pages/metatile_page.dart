@@ -1,7 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
+import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/models/app_event/tile_app_event.dart';
+import 'package:gbte/models/data_structures/matrix2d.dart';
 import 'package:gbte/models/saveable/metatile.dart';
+import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/color_select.dart';
 import 'package:gbte/widgets/metatile_select.dart';
@@ -11,9 +18,15 @@ import 'package:gbte/widgets/tile_display.dart';
 import 'package:gbte/widgets/tile_edit_buttons.dart';
 
 class MetatilePage extends StatefulWidget {
-  const MetatilePage({super.key, required this.metatiles});
+  const MetatilePage(
+      {super.key,
+      required this.metatiles,
+      required this.isMetatiles,
+      required this.page});
 
   final List<Metatile> metatiles;
+  final bool isMetatiles;
+  final String page;
 
   @override
   State<MetatilePage> createState() => _MetatilePageState();
@@ -25,12 +38,13 @@ class _MetatilePageState extends State<MetatilePage> {
   late int selectedMetatile;
   late int hoveredTile;
 
-  Metatile? get metatile => widget.metatiles.isNotEmpty
-      ? widget.metatiles[selectedMetatile]
-      : null;
+  Metatile? get metatile =>
+      widget.metatiles.isNotEmpty ? widget.metatiles[selectedMetatile] : null;
 
   void createMetatile() {
-    Globals.metasprites.add(Metatile(2, [0, 1, 2, 3]));
+    int offset = widget.isMetatiles ? Constants.tileBankSize * 2 : 0;
+    widget.metatiles
+        .add(Metatile(2, [offset + 0, offset + 1, offset + 2, offset + 3]));
     setState(() {
       selectedMetatile = widget.metatiles.length - 1;
     });
@@ -39,7 +53,7 @@ class _MetatilePageState extends State<MetatilePage> {
   void deleteMetatile(int index) {
     setState(() {
       widget.metatiles.removeAt(index);
-      while (selectedMetatile >= Globals.metasprites.length &&
+      while (selectedMetatile >= widget.metatiles.length &&
           selectedMetatile != 0) {
         selectedMetatile--;
       }
@@ -97,16 +111,73 @@ class _MetatilePageState extends State<MetatilePage> {
     });
   }
 
+  void onPaste() {
+    if (Globals.copyBuffer == null) return;
+    if (widget.metatiles.isEmpty) createMetatile();
+
+    List<Uint8List> previousTiles = metatile!.toBytes();
+
+    Matrix2D matrix = metatile!.createMatrix();
+
+    for (int y = 0; y < matrix.height; y++) {
+      for (int x = 0; x < matrix.width; x++) {
+        if (x < Globals.copyBuffer!.width && y < Globals.copyBuffer!.height) {
+          matrix.set(x, y, Globals.copyBuffer!.get(x, y));
+        } else {
+          matrix.set(x, y, 0);
+        }
+      }
+    }
+    setState(() {
+      metatile!.fromMatrix(matrix);
+    });
+
+    Events.appEvent(TileAppEvent(
+        tileIndices: metatile!.tiles,
+        previousTiles: previousTiles,
+        nextTiles: metatile!.toBytes()));
+  }
+
+  void onCopy() {
+    if (widget.metatiles.isNotEmpty) {
+      Globals.copyBuffer = widget.metatiles[selectedMetatile].createMatrix();
+    }
+  }
+
+  void onCut() {
+    if (widget.metatiles.isNotEmpty) {
+      List<Uint8List> previousTiles = metatile!.toBytes();
+
+      onCopy();
+      setState(() {
+        for (int index in metatile!.tiles) {
+          Globals.tiles[index] = Tile();
+        }
+      });
+
+      Events.appEvent(TileAppEvent(
+          tileIndices: metatile!.tiles,
+          previousTiles: previousTiles,
+          nextTiles: metatile!.toBytes()));
+    }
+  }
+
+  String get label => widget.isMetatiles ? "metatile" : "metasprite";
+
   Widget createButton() => TextButton(
-      onPressed: () => createMetatile(), child: const Text("Create metatile"));
+      onPressed: () => createMetatile(), child: Text("Create $label"));
 
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      onCopy: onCopy,
+      onPaste: onPaste,
+      onCut: onCut,
+      page: widget.page,
       child: metatile == null
           ? Center(
               child: Column(
-                children: [const Text("No metatiles!"), createButton()],
+                children: [Text("No ${label}s!"), createButton()],
               ),
             )
           : Row(
@@ -136,7 +207,10 @@ class _MetatilePageState extends State<MetatilePage> {
                       Column(
                         children: [
                           MetatileTileSelect(
-                            tileBank: TileBank.sprite,
+                            metatiles: widget.metatiles,
+                            tileBank: widget.isMetatiles
+                                ? TileBank.background
+                                : TileBank.sprite,
                             onChange: metatileUpdate,
                             metatileIndex: selectedMetatile,
                           ),
@@ -146,7 +220,7 @@ class _MetatilePageState extends State<MetatilePage> {
                       ),
                       TextButton(
                           onPressed: () => deleteMetatile(selectedMetatile),
-                          child: const Text("Delete Tile")),
+                          child: const Text("Delete")),
                       SizedBox(
                         height: 50,
                         child: ColorSelect(
@@ -168,6 +242,7 @@ class _MetatilePageState extends State<MetatilePage> {
                       createButton(),
                       Flexible(
                         child: MetatileSelect(
+                          metatiles: widget.metatiles,
                           selected: selectedMetatile,
                           onChange: selectTile,
                         ),

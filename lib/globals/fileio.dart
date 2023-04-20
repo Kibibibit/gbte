@@ -225,6 +225,18 @@ abstract class FileIO {
           Globals.tilePalettes[i] = data.removeAt(0);
         }
 
+        int metaspriteCount = data.removeAt(0);
+
+        for (int i = 0; i < metaspriteCount; i++) {
+          int size = data.first;
+          int range = 1 + size * size * 2;
+          List<int> metatileData = data.sublist(0, range);
+          data.removeRange(0, range);
+          Metatile metatile = Metatile(0, []);
+          metatile.load(Uint8List.fromList(metatileData));
+          Globals.metasprites.add(metatile);
+        }
+
         int metatileCount = data.removeAt(0);
 
         for (int i = 0; i < metatileCount; i++) {
@@ -234,7 +246,7 @@ abstract class FileIO {
           data.removeRange(0, range);
           Metatile metatile = Metatile(0, []);
           metatile.load(Uint8List.fromList(metatileData));
-          Globals.metasprites.add(metatile);
+          Globals.metatiles.add(metatile);
         }
 
         List<int> object = [];
@@ -291,6 +303,12 @@ abstract class FileIO {
     out.add(Globals.metasprites.length);
 
     for (Metatile metatile in Globals.metasprites) {
+      out.addAll(metatile.save());
+    }
+
+    out.add(Globals.metatiles.length);
+
+    for (Metatile metatile in Globals.metatiles) {
       out.addAll(metatile.save());
     }
 

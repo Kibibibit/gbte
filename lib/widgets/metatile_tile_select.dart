@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gbte/globals/globals.dart';
+import 'package:gbte/constants/constants.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/widgets/dialog/tile_select_dialog.dart';
@@ -9,6 +9,7 @@ import 'package:gbte/widgets/tile_display.dart';
 class MetatileTileSelect extends StatefulWidget {
   final int metatileIndex;
   final int tileBank;
+  final List<Metatile> metatiles;
 
   final void Function(int tile, int index) onChange;
 
@@ -16,14 +17,14 @@ class MetatileTileSelect extends StatefulWidget {
       {super.key,
       required this.metatileIndex,
       required this.onChange,
-      required this.tileBank});
+      required this.tileBank, required this.metatiles});
 
   @override
   State<MetatileTileSelect> createState() => _MetatileTileSelectState();
 }
 
 class _MetatileTileSelectState extends State<MetatileTileSelect> {
-  Metatile get metatile => Globals.metasprites[widget.metatileIndex];
+  Metatile get metatile => widget.metatiles[widget.metatileIndex];
 
   int? hoverTile;
 
@@ -55,6 +56,8 @@ class _MetatileTileSelectState extends State<MetatileTileSelect> {
     });
   }
 
+  String label(int index) => (index - (Constants.tileBankSize*widget.tileBank)).toByteString(1);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -84,7 +87,7 @@ class _MetatileTileSelectState extends State<MetatileTileSelect> {
                           : Colors.transparent,
                       child: Center(
                         child: StrokeText(
-                          metatile.tiles[index].toByteString(1),
+                         label(metatile.tiles[index]),
                         ),
                       ),
                     )

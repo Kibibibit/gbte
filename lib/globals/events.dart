@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:gbte/constants/constants.dart';
 import 'package:gbte/globals/fileio.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/app_event/app_event.dart';
@@ -13,6 +14,8 @@ class Events {
       StreamController<String>.broadcast();
   static StreamController<AppEvent> appEventStream =
       StreamController<AppEvent>.broadcast();
+
+  static StreamController<String> copyCutPasteStream = StreamController.broadcast();
 
   static final List<AppEvent> _eventQueue = [];
 
@@ -66,5 +69,21 @@ class Events {
         FileIO.triggerLoadStream(Globals.saveLocation!);
       }
     }
+  }
+
+  static void copy() {
+    _cutCopyPaste(Constants.copy);
+  }
+
+  static void cut() {
+    _cutCopyPaste(Constants.cut);
+  }
+
+  static void paste() {
+    _cutCopyPaste(Constants.paste);
+  }
+
+  static void _cutCopyPaste(String type) {
+    copyCutPasteStream.sink.add("${Globals.page};$type");
   }
 }

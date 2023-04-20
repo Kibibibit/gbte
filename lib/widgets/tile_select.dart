@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
+import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/widgets/tile_display.dart';
 
 class TileSelect extends StatelessWidget {
@@ -17,6 +18,7 @@ class TileSelect extends StatelessWidget {
   });
 
   int _index(int i) => (tileBank * Constants.tileBankSize) + i;
+  String _displayIndex(int i) => i.toByteString(1);
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class TileSelect extends StatelessWidget {
                       width: 50,
                       child: Center(
                         child: Text(
-                          "${_index(index)}",
+                          _displayIndex(index),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),

@@ -46,33 +46,42 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text("${filename ?? 'Unsaved File'}${Globals.saved ? '' : '*'}"),
-        leadingWidth: 300,
-        leading: Row(
-          children: [
-            IconButton(
-                onPressed: () => FileIO.newFile(context),
-                icon: const Icon(Icons.add_box_rounded)),
-            IconButton(
+        actions: [
+          IconButton(
+              onPressed: () => FileIO.newFile(context),
+              icon: const Icon(Icons.add_box_rounded)),
+          IconButton(
               onPressed: () => FileIO.saveFile(context),
-              icon: const Icon(Icons.save),
-            ),
-            IconButton(
-                onPressed: () => FileIO.saveAsFile(context),
-                icon: const Icon(Icons.save_as)),
-            IconButton(
+              icon: const Icon(Icons.save)),
+          IconButton(
+              onPressed: () => FileIO.saveAsFile(context),
+              icon: const Icon(Icons.save_as)),
+          IconButton(
               onPressed: () => FileIO.load(context),
-              icon: const Icon(Icons.open_in_new),
-            ),
-            IconButton(onPressed: ()=>Events.undoEvent(), icon: const Icon(Icons.undo)),
-            IconButton(onPressed: ()=>Events.redoEvent(), icon: const Icon(Icons.redo)),
-            IconButton(onPressed: ()=>FileIO.exportFile(context), icon: const Icon(Icons.code)),
-          ],
-        ),
+              icon: const Icon(Icons.open_in_new)),
+          IconButton(
+              onPressed: () => FileIO.exportFile(context),
+              icon: const Icon(Icons.code)),
+          IconButton(
+              onPressed: () => Events.undoEvent(),
+              icon: const Icon(Icons.undo)),
+          IconButton(
+              onPressed: () => Events.redoEvent(),
+              icon: const Icon(Icons.redo)),
+          IconButton(
+              onPressed: () => Events.copy(), icon: const Icon(Icons.copy)),
+          IconButton(
+              onPressed: () => Events.cut(), icon: const Icon(Icons.cut)),
+          IconButton(
+              onPressed: () => Events.paste(), icon: const Icon(Icons.paste))
+        ],
         toolbarHeight: 40,
         backgroundColor: Colors.blue,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(40),
           child: TabBar(
+              onTap: (value) =>
+                  Globals.page = widget.pages.keys.toList()[value],
               padding: EdgeInsets.zero,
               labelPadding: EdgeInsets.zero,
               controller: _tabController,

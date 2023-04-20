@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/components/int_editing_controller.dart';
@@ -6,8 +7,10 @@ import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/models/app_event/tile_app_event.dart';
 import 'package:gbte/models/saveable/gbc_color.dart';
 import 'package:gbte/models/app_event/palette_app_event.dart';
+import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/pages/base_page.dart';
 import 'package:gbte/widgets/palette_editor.dart';
 import 'package:gbte/widgets/tile_display.dart';
@@ -152,9 +155,47 @@ class _TilePageState extends State<TilePage> {
     ));
   }
 
+  void onCopy() {
+    Globals.copyBuffer = Globals.tiles[selectedTile].matrix.copy();
+  }
+
+  void onCut() {
+    Uint8List prev = Globals.tiles[selectedTile].save();
+    onCopy();
+    setState(() {
+      Globals.tiles[selectedTile] = Tile();
+    });
+
+    Events.appEvent(TileAppEvent(
+        tileIndices: [selectedTile],
+        previousTiles: [prev],
+        nextTiles: [Tile().save()]));
+  }
+
+  void onPaste() {
+    if (Globals.copyBuffer == null) return;
+    Uint8List prev = Globals.tiles[selectedTile].save();
+    setState(() {
+      for (int y = 0; y < Tile.size; y++) {
+        for (int x = 0; x < Tile.size; x++) {
+          Globals.tiles[selectedTile].set(x, y, Globals.copyBuffer!.get(x, y));
+        }
+      }
+    });
+    Events.updateTile(selectedTile);
+    Events.appEvent(TileAppEvent(
+        tileIndices: [selectedTile],
+        previousTiles: [prev],
+        nextTiles: [Globals.tiles[selectedTile].save()]));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      onCopy: onCopy,
+      onCut: onCut,
+      onPaste: onPaste,
+      page: Constants.tilePage,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

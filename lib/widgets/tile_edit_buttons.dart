@@ -6,6 +6,7 @@ import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/models/app_event/tile_app_event.dart';
 import 'package:gbte/models/data_structures/matrix2d.dart';
+import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/tile.dart';
 
 class TileEditButtons extends StatelessWidget {
@@ -18,26 +19,10 @@ class TileEditButtons extends StatelessWidget {
       tiles.map((tile) => Globals.tiles[tile].save()).toList();
 
   Matrix2D createMetatileMatrix() {
-    List<Matrix2D> rows = [];
-    int i = 0;
-    for (int y = 0; y < metatileSize; y++) {
-      List<Matrix2D> columns = [];
-      for (int x = 0; x < metatileSize; x++) {
-        columns.add(Globals.tiles[tiles[i]].matrix);
-        i++;
-      }
-      Matrix2D row = columns.removeAt(0);
-      while (columns.isNotEmpty) {
-        row = row.joinMatrix(MatrixAlignment.right, columns.removeAt(0));
-      }
-      rows.add(row);
-    }
-    Matrix2D metatileData = rows.removeAt(0);
-    while (rows.isNotEmpty) {
-      metatileData =
-          metatileData.joinMatrix(MatrixAlignment.bottom, rows.removeAt(0));
-    }
-    return metatileData;
+
+    Metatile metatile = Metatile(metatileSize, tiles);
+    return metatile.createMatrix();
+    
   }
 
   void breakdownMetatile(Matrix2D metatileData, List<Uint8List> previousTiles) {

@@ -33,6 +33,15 @@ class ShortcutHandlerWidget extends StatelessWidget {
         },
         MetaKeyActivator.control(LogicalKeyboardKey.keyE): () {
           FileIO.exportFile(context);
+        },
+        MetaKeyActivator.control(LogicalKeyboardKey.keyC): () {
+          Events.copy();
+        },
+        MetaKeyActivator.control(LogicalKeyboardKey.keyV): () {
+          Events.paste();
+        },
+        MetaKeyActivator.control(LogicalKeyboardKey.keyX): () {
+          Events.cut();
         }
       },
       child: Focus(

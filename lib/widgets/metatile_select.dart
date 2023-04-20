@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:gbte/globals/globals.dart';
+import 'package:gbte/helpers/extensions/to_bytes.dart';
+import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/widgets/tile_display.dart';
 
 class MetatileSelect extends StatelessWidget {
+  final List<Metatile> metatiles;
   final int selected;
   final void Function(int index) onChange;
 
   const MetatileSelect(
-      {super.key, required this.selected, required this.onChange});
+      {super.key, required this.selected, required this.onChange, required this.metatiles});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class MetatileSelect extends StatelessWidget {
       decoration: BoxDecoration(border: Border.all()),
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: Globals.metasprites.length,
+        itemCount: metatiles.length,
         itemBuilder: (context, index) => Material(
           color: selected == index ? Colors.lightBlue : Colors.transparent,
           child: InkWell(
@@ -28,7 +30,7 @@ class MetatileSelect extends StatelessWidget {
                   width: 50,
                   child: Center(
                     child: Text(
-                      "$index",
+                      index.toByteString(1),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -37,8 +39,8 @@ class MetatileSelect extends StatelessWidget {
                   decoration: BoxDecoration(border: Border.all()),
                   height: 80,
                   child: TileDisplay(
-                    tiles: Globals.metasprites[index].tiles,
-                    metatileSize: Globals.metasprites[index].size,
+                    tiles: metatiles[index].tiles,
+                    metatileSize: metatiles[index].size,
                     border: false,
                     primaryColor: 2,
                     secondaryColor: 0,

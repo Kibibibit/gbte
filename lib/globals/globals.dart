@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:gbte/constants/constants.dart';
+import 'package:gbte/models/data_structures/matrix2d.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/tile.dart';
@@ -35,6 +36,10 @@ class Globals {
       (index) => index < Constants.paletteBankSize
           ? "SPR $index"
           : "BKG ${index - 8}");
+    
+  static Matrix2D? copyBuffer;
+
+  static String page = Constants.tilePage;
 
   static File? saveLocation;
 
@@ -56,6 +61,8 @@ class Globals {
             : "BKG ${index - 8}");
     saveLocation = null;
     saved = false;
+
+    copyBuffer = null;
 
     metasprites = [];
     metatiles = [];

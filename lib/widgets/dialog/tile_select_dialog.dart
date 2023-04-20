@@ -74,7 +74,7 @@ class _TileSelectDialogState extends State<TileSelectDialog> {
                       ),
                       child: Center(
                         child:
-                            StrokeText(_indexFromBank(index).toByteString(1)),
+                            StrokeText(index.toByteString(1)),
                       ),
                     )
                   ],
