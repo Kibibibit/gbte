@@ -5,6 +5,7 @@ import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/fileio.dart';
 import 'package:gbte/globals/globals.dart';
 import 'package:gbte/widgets/shortcut_handler_widget.dart';
+import 'package:gbte/widgets/tooltip_icon_button.dart';
 
 class RootPage extends StatefulWidget {
   final Map<String, Widget> pages;
@@ -47,33 +48,49 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text("${filename ?? 'Unsaved File'}${Globals.saved ? '' : '*'}"),
         actions: [
-          IconButton(
+          TooltipIconButton(
+              message: "New File (CTRL+N)",
               onPressed: () => FileIO.newFile(context),
               icon: const Icon(Icons.add_box_rounded)),
-          IconButton(
+          TooltipIconButton(
+              message: "Save (CTRL+S)",
               onPressed: () => FileIO.saveFile(context),
               icon: const Icon(Icons.save)),
-          IconButton(
+          TooltipIconButton(
+              message: "Save As (CTRL+SHIFT+S)",
               onPressed: () => FileIO.saveAsFile(context),
               icon: const Icon(Icons.save_as)),
-          IconButton(
+          TooltipIconButton(
+              message: "Load (CTRL+O)",
               onPressed: () => FileIO.load(context),
               icon: const Icon(Icons.open_in_new)),
-          IconButton(
+          TooltipIconButton(
+              message: "Export (CTRL+E)",
               onPressed: () => FileIO.exportFile(context),
               icon: const Icon(Icons.code)),
-          IconButton(
+          TooltipIconButton(
+              message: "Undo (CTRL+Z)",
               onPressed: () => Events.undoEvent(),
               icon: const Icon(Icons.undo)),
-          IconButton(
+          TooltipIconButton(
+              message: "Redo (CTRL+Y)",
               onPressed: () => Events.redoEvent(),
               icon: const Icon(Icons.redo)),
-          IconButton(
-              onPressed: () => Events.copy(), icon: const Icon(Icons.copy)),
-          IconButton(
-              onPressed: () => Events.cut(), icon: const Icon(Icons.cut)),
-          IconButton(
-              onPressed: () => Events.paste(), icon: const Icon(Icons.paste))
+          TooltipIconButton(
+            message: "Copy (CTRL+C)",
+            onPressed: () => Events.copy(),
+            icon: const Icon(Icons.copy),
+          ),
+          TooltipIconButton(
+            message: "Cut (CTRL+X)",
+            onPressed: () => Events.cut(),
+            icon: const Icon(Icons.cut),
+          ),
+          TooltipIconButton(
+            message: "Paste (CTRL+V)",
+            onPressed: () => Events.paste(),
+            icon: const Icon(Icons.paste),
+          )
         ],
         toolbarHeight: 40,
         backgroundColor: Colors.blue,

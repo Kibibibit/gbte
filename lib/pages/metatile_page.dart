@@ -43,6 +43,10 @@ class _MetatilePageState extends State<MetatilePage> {
 
   void createMetatile() {
     int offset = widget.isMetatiles ? Constants.tileBankSize * 2 : 0;
+    if (widget.metatiles.isNotEmpty) {
+      offset = widget.metatiles.last.tiles.last+1;
+    }
+
     widget.metatiles
         .add(Metatile(2, [offset + 0, offset + 1, offset + 2, offset + 3]));
     setState(() {

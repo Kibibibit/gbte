@@ -8,6 +8,7 @@ import 'package:gbte/models/app_event/tile_app_event.dart';
 import 'package:gbte/models/data_structures/matrix2d.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/models/saveable/tile.dart';
+import 'package:gbte/widgets/tooltip_icon_button.dart';
 
 class TileEditButtons extends StatelessWidget {
   final List<int> tiles;
@@ -19,10 +20,8 @@ class TileEditButtons extends StatelessWidget {
       tiles.map((tile) => Globals.tiles[tile].save()).toList();
 
   Matrix2D createMetatileMatrix() {
-
     Metatile metatile = Metatile(metatileSize, tiles);
     return metatile.createMatrix();
-    
   }
 
   void breakdownMetatile(Matrix2D metatileData, List<Uint8List> previousTiles) {
@@ -75,32 +74,41 @@ class TileEditButtons extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          IconButton(
+          TooltipIconButton(
+              message: "Translate up",
               onPressed: () => shunt(ShuntDirection.up),
               icon: const Icon(Icons.north)),
-          IconButton(
+          TooltipIconButton(
+              message: "Translate down",
               onPressed: () => shunt(ShuntDirection.down),
               icon: const Icon(Icons.south)),
-          IconButton(
+          TooltipIconButton(
+              message: "Translate left",
               onPressed: () => shunt(ShuntDirection.left),
               icon: const Icon(Icons.west)),
-          IconButton(
+          TooltipIconButton(
+              message: "Translate right",
               onPressed: () => shunt(ShuntDirection.right),
               icon: const Icon(Icons.east)),
           const Divider(),
-          IconButton(
-              onPressed: () => mirror(false), icon: const Icon(Icons.flip)),
-          IconButton(
+          TooltipIconButton(
+              message: "Flip horizontally",
+              onPressed: () => mirror(false),
+              icon: const Icon(Icons.flip)),
+          TooltipIconButton(
+              message: "Flip vertically",
               onPressed: () => mirror(true),
               icon: Transform.rotate(
                 angle: pi / 2,
                 child: const Icon(Icons.flip),
               )),
           const Divider(),
-          IconButton(
+          TooltipIconButton(
+            message: "Rotate clockwise",
               onPressed: () => rotate(false),
               icon: const Icon(Icons.rotate_90_degrees_cw_outlined)),
-          IconButton(
+          TooltipIconButton(
+              message: "Rotate counter-clockwise",
               onPressed: () => rotate(true),
               icon: const Icon(Icons.rotate_90_degrees_ccw)),
         ],
