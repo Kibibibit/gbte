@@ -43,6 +43,7 @@ class Events {
     _eventQueue.add(event);
     _undoIndex++;
     if (_eventQueue.length > 100) {
+      _undoIndex--;
       _eventQueue.removeAt(0);
     }
   }
