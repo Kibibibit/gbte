@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:gbte/helpers/extensions/base64_string.dart';
 import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/gbc_color.dart';
 import 'package:gbte/models/saveable/saveable.dart';
@@ -20,27 +19,27 @@ class Palette extends Exportable {
   }
 
   @override
-  void load(Uint8List data) {
-    List<int> bytes = data.toList();
-    int header = bytes.removeAt(0);
+  void load(String data) {
+    List<String> decoded = data.split(",");
+    String header = decoded.removeAt(0);
 
     assert(header == Saveable.paletteHeader, "Tried to load a palette with a non-palette value");
 
     for (int i = 0; i < 4; i++) {
-      List<int> color = bytes.getRange(i*2, i*2 + 2).toList();
-      colors[i].load(Uint8List.fromList(color));
+      String color = decoded[i];
+      colors[i].load(color);
     }
   }
 
   @override
-  Uint8List save() {
-    List<int> out = [];
+  String save() {
+    List<String> out = [];
     out.add(Saveable.paletteHeader);
     for (int i = 0; i < 4; i++) {
-      out.addAll(colors[i].save());
+      out.add(colors[i].save());
     }
 
-    return Uint8List.fromList(out);
+    return out.join(",").toBase64();
   }
   
   @override

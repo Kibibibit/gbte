@@ -63,7 +63,7 @@ class _RootPageState extends State<RootPage> with TickerProviderStateMixin {
           TooltipIconButton(
               message: "Load (CTRL+O)",
               onPressed: () => FileIO.load(context),
-              icon: const Icon(Icons.open_in_new)),
+              icon: const Icon(Icons.file_open_outlined)),
           TooltipIconButton(
               message: "Export (CTRL+E)",
               onPressed: () => FileIO.exportFile(context),

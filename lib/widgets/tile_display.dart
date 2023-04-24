@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
@@ -42,7 +41,7 @@ class _TileDisplayState extends State<TileDisplay> {
   late StreamSubscription<int> tileStream;
   late StreamSubscription<String> loadStream;
 
-  late List<Uint8List> previousTiles;
+  late List<String> previousTiles;
 
   @override
   void initState() {
@@ -70,7 +69,7 @@ class _TileDisplayState extends State<TileDisplay> {
     loadStream.cancel();
   }
 
-  List<Uint8List> _mapTiles() {
+  List<String> _mapTiles() {
     return widget.tiles.map((e) => Globals.tiles[e].save()).toList();
   }
 
@@ -98,7 +97,7 @@ class _TileDisplayState extends State<TileDisplay> {
 
   void onPointerUp() {
     if (!widget.edit) return;
-    List<Uint8List> newTiles = _mapTiles();
+    List<String> newTiles = _mapTiles();
     TileAppEvent event = TileAppEvent(
         tileIndices: widget.tiles,
         previousTiles: previousTiles,

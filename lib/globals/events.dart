@@ -33,10 +33,7 @@ class Events {
   }
 
   static void appEvent(AppEvent event) {
-    Globals.saved = false;
-    if (Globals.saveLocation != null) {
-      FileIO.triggerLoadStream(Globals.saveLocation!);
-    }
+    Events.triggerUnsaved();
     while (_undoIndex < _eventQueue.length - 1) {
       _eventQueue.removeLast();
     }
@@ -53,10 +50,7 @@ class Events {
       AppEvent event = _eventQueue[_undoIndex];
       event.undoEvent();
       _undoIndex--;
-      Globals.saved = false;
-      if (Globals.saveLocation != null) {
-        FileIO.triggerLoadStream(Globals.saveLocation!);
-      }
+      Events.triggerUnsaved();
     }
   }
 
@@ -65,10 +59,14 @@ class Events {
       _undoIndex++;
       AppEvent event = _eventQueue[_undoIndex];
       event.redoEvent();
-      Globals.saved = false;
-      if (Globals.saveLocation != null) {
-        FileIO.triggerLoadStream(Globals.saveLocation!);
-      }
+      Events.triggerUnsaved();
+    }
+  }
+
+  static void triggerUnsaved() {
+    Globals.saved = false;
+    if (Globals.saveLocation != null) {
+      FileIO.triggerLoadStream(Globals.saveLocation!);
     }
   }
 

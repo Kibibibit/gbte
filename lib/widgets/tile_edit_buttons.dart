@@ -1,6 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/globals.dart';
@@ -16,7 +14,7 @@ class TileEditButtons extends StatelessWidget {
   const TileEditButtons(
       {super.key, required this.tiles, required this.metatileSize});
 
-  List<Uint8List> _mapTiles(List<int> tiles) =>
+  List<String> _mapTiles(List<int> tiles) =>
       tiles.map((tile) => Globals.tiles[tile].save()).toList();
 
   Matrix2D createMetatileMatrix() {
@@ -24,7 +22,7 @@ class TileEditButtons extends StatelessWidget {
     return metatile.createMatrix();
   }
 
-  void breakdownMetatile(Matrix2D metatileData, List<Uint8List> previousTiles) {
+  void breakdownMetatile(Matrix2D metatileData, List<String> previousTiles) {
     int i = 0;
 
     for (int y = 0; y < metatileSize; y++) {
@@ -47,21 +45,21 @@ class TileEditButtons extends StatelessWidget {
   }
 
   void shunt(ShuntDirection direction) {
-    List<Uint8List> previousTiles = _mapTiles(tiles);
+    List<String> previousTiles = _mapTiles(tiles);
     Matrix2D metatileData = createMetatileMatrix();
     metatileData = metatileData.shunt(direction);
     breakdownMetatile(metatileData, previousTiles);
   }
 
   void mirror(bool vertical) {
-    List<Uint8List> previousTiles = _mapTiles(tiles);
+    List<String> previousTiles = _mapTiles(tiles);
     Matrix2D metatileData = createMetatileMatrix();
     metatileData = metatileData.mirror(vertical);
     breakdownMetatile(metatileData, previousTiles);
   }
 
   void rotate(bool counterClockWise) {
-    List<Uint8List> previousTiles = _mapTiles(tiles);
+    List<String> previousTiles = _mapTiles(tiles);
     Matrix2D metatileData = createMetatileMatrix();
     metatileData = metatileData.rotate(counterClockWise);
     breakdownMetatile(metatileData, previousTiles);

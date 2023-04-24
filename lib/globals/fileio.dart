@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,16 +8,13 @@ import 'package:gbte/constants/tile_bank.dart';
 import 'package:gbte/globals/events.dart';
 import 'package:gbte/globals/exports.dart';
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/helpers/extensions/base64_string.dart';
 import 'package:gbte/helpers/extensions/time_stamp.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/helpers/filename_from_path.dart';
-import 'package:gbte/helpers/int_to_bytes.dart';
-import 'package:gbte/helpers/string_to_bytes.dart';
 import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/metatile.dart';
-import 'package:gbte/models/saveable/palette.dart';
 import 'package:gbte/models/saveable/saveable.dart';
-import 'package:gbte/models/saveable/tile.dart';
 import 'package:gbte/widgets/dialog/export_dialog.dart';
 import 'package:gbte/widgets/dialog/file_deleted_dialog.dart';
 import 'package:gbte/widgets/dialog/invalid_file_dialog.dart';
@@ -46,42 +41,32 @@ abstract class FileIO {
     Events.clearAppEventQueue();
   }
 
+  static const String exportBoolsLine = "SECTION-EXPORT-BOOLS:";
+  static const String exportIntsLine = "SECTION-EXPORT-INTS:";
+  static const String exportStringsLine = "SECTION-EXPORT-STRINGS:";
+  static const String metaspriteLine = "SECTION-METASPRITES:";
+  static const String metatilesLine = "SECTION-METATILES:";
+  static const String tilesLine = "SECTION-TILES:";
+  static const String palettesLine = "SECTION-PALETTES:";
+  static const String tilePaletteLine = "SECTION-TILE-PALETTES:";
+
   static const List<String> _types = ["gbt"];
 
-  static const List<int> _saveFileHeader = [
-    0xFF,
-    0xFF,
-    0x00,
-    0x00,
-    0x51,
-    0x33,
-    0x67,
-    0x62,
-    0x74,
-    0x20,
-    0x66,
-    0x69,
-    0x6C,
-    0x65,
-  ];
+  static const String _saveFileHeader =
+      "0xFF,0xFF,0x00,0x00,0x51,0x33,0x67,0x62,0x74,0x20,0x66,0x69,0x6C,0x65";
 
   static const int _maxWidth = 40;
 
-  static String _loadString(List<int> data) {
-    List<int> sizeBytes = data.getRange(0, 4).toList();
-    data.removeRange(0, 4);
-    int size = bytesToInt(sizeBytes);
-    List<int> units = data.getRange(0, size).toList();
-    data.removeRange(0, size);
-    return utf8.decode(units);
-  }
 
   static void _save(File saveLocation) async {
     if (saveLocation.existsSync()) {
       saveLocation.deleteSync();
     }
     saveLocation.createSync();
-    saveLocation.writeAsBytesSync(createSaveData(saveLocation));
+    List<String> data = createSaveData(saveLocation);
+    for (String line in data) {
+      saveLocation.writeAsStringSync(line, mode: FileMode.append);
+    }
     Globals.saved = true;
   }
 
@@ -152,6 +137,18 @@ abstract class FileIO {
     Events.load(path);
   }
 
+  static void _loadExportFlag(String section, String line) {
+    List<String> split = line.split(":");
+    String key = split[0];
+    if (section == exportBoolsLine) {
+      Exports.exportFlags[key] = split[1] == "true";
+    } else if (section == exportIntsLine) {
+      Exports.exportRanges[key] = int.parse(split[1]);
+    } else if (section == exportStringsLine) {
+      Exports.exportStrings[key] = split[1];
+    }
+  }
+
   static void load(BuildContext context) async {
     if (!Globals.saved) {
       if (context.mounted) {
@@ -170,110 +167,70 @@ abstract class FileIO {
     if (result != null) {
       File file = File(result.files.single.path!);
       if (file.existsSync()) {
-        bool validHeader = true;
         Globals.saveLocation = file;
-        List<int> data = file.readAsBytesSync().toList();
+        List<String> data = file.readAsLinesSync();
 
-        if (data.length > _saveFileHeader.length) {
-          List<int> header = data.sublist(0, _saveFileHeader.length);
-          data.removeRange(0, _saveFileHeader.length);
+        
 
-          for (int i = 0; i < _saveFileHeader.length; i++) {
-            validHeader = header[i] == _saveFileHeader[i];
-            if (!validHeader) {
-              break;
-            }
-          }
-        } else {
+        if (data.removeAt(0).replaceAll("\n", "").fromBase64() != _saveFileHeader) {
           if (context.mounted) {
             await showDialog(
                 context: context,
                 builder: (context) => const InvalidFileDialog(
                     errorMessage:
-                        "The file was too small! The file could not contain enough data to store a tileset."));
+                        "Missing file header! Has the file been edited by hand?"));
           }
           return;
         }
+        String section = "";
+        String line = "";
 
-        if (!validHeader) {
-          if (context.mounted) {
-            await showDialog(
-                context: context,
-                builder: (context) => const InvalidFileDialog(
-                    errorMessage:
-                        "File header did not match expected values! Has the file been edited by hand?"));
-          }
-          return;
-        }
+        int tileIndex = 0;
+        int paletteIndex = 0;
 
-        for (String key in Exports.exportFlags.keys) {
-          int flag = data.removeAt(0);
-          Exports.exportFlags[key] = flag > 0;
-        }
+        Globals.metasprites = [];
+        Globals.metatiles = [];
 
-        for (String key in Exports.exportRanges.keys) {
-          int value = data.removeAt(0);
-          Exports.exportRanges[key] = value;
-        }
 
-        for (String key in Exports.exportStrings.keys) {
-          String value = _loadString(data);
-          Exports.exportStrings[key] = value;
-        }
-
-        for (int i = 0; i < Globals.tilePalettes.length; i++) {
-          Globals.tilePalettes[i] = data.removeAt(0);
-        }
-
-        int metaspriteCount = data.removeAt(0);
-
-        for (int i = 0; i < metaspriteCount; i++) {
-          int size = data.first;
-          int range = 1 + size * size * 2;
-          List<int> metatileData = data.sublist(0, range);
-          data.removeRange(0, range);
-          Metatile metatile = Metatile(0, []);
-          metatile.load(Uint8List.fromList(metatileData));
-          Globals.metasprites.add(metatile);
-        }
-
-        int metatileCount = data.removeAt(0);
-
-        for (int i = 0; i < metatileCount; i++) {
-          int size = data.first;
-          int range = 1 + size * size * 2;
-          List<int> metatileData = data.sublist(0, range);
-          data.removeRange(0, range);
-          Metatile metatile = Metatile(0, []);
-          metatile.load(Uint8List.fromList(metatileData));
-          Globals.metatiles.add(metatile);
-        }
-
-        List<int> object = [];
-        int objectSize = 0;
-        int paletteCount = 0;
-        int tileCount = 0;
-        for (int d in data) {
-          if (object.length != objectSize) {
-            object.add(d);
+        while(data.isNotEmpty) {
+          line = data.removeAt(0);
+          line = line.replaceFirst("\n", "").fromBase64();
+          if (line.startsWith("SECTION-")) {
+            section = line;
           } else {
-            if (object.isNotEmpty) {
-              if (objectSize == Saveable.tileByteLength) {
-                Globals.tiles[tileCount].load(Uint8List.fromList(object));
-                tileCount++;
-              }
-              if (objectSize == Saveable.paletteByteLength) {
-                Globals.palettes[paletteCount].load(Uint8List.fromList(object));
-                paletteCount++;
-              }
-              object = [];
-            }
-            if (Saveable.dataHeaders.contains(d)) {
-              objectSize = Saveable.dataSizes[d];
-              object.add(d);
+            switch (section) {
+              case exportBoolsLine:
+              case exportIntsLine:
+              case exportStringsLine:
+                _loadExportFlag(section,line);
+                break;
+              case tilesLine:
+                Globals.tiles[tileIndex].load(line);
+                tileIndex++;
+                break;
+              case palettesLine:
+                Globals.palettes[paletteIndex].load(line);
+                paletteIndex++;
+                break;
+              case metaspriteLine:
+                Globals.metasprites.add(Metatile(0, []));
+                Globals.metasprites.last.load(line);
+                break;
+              case metatilesLine:
+                Globals.metatiles.add(Metatile(0, []));
+                Globals.metatiles.last.load(line);
+                break;
+              case tilePaletteLine:
+                List<String> values = line.split(",");
+                int i = 0;
+                for (String v in values) {
+                  Globals.tilePalettes[i] = v.fromByteString();
+                  i++;
+                }
             }
           }
         }
+
         Globals.saved = true;
         Events.clearAppEventQueue();
         triggerLoadStream(file);
@@ -281,45 +238,45 @@ abstract class FileIO {
     }
   }
 
-  static List<int> createSaveData(File saveLocation) {
-    List<int> out = [];
-
-    out.addAll(_saveFileHeader);
-
-    for (bool value in Exports.exportFlags.values) {
-      out.add(value ? 0x01 : 0x00);
+  static List<String> _mapExportSettings(String section, Map map) {
+    List<String> out = [section.toBase64()];
+    for (MapEntry entry in map.entries) {
+      out.add("${entry.key}:${entry.value}".toBase64());
     }
-
-    for (int value in Exports.exportRanges.values) {
-      out.add(value);
-    }
-
-    for (String string in Exports.exportStrings.values) {
-      out.addAll(stringToBytes(string));
-    }
-
-    out.addAll(Globals.tilePalettes);
-
-    out.add(Globals.metasprites.length);
-
-    for (Metatile metatile in Globals.metasprites) {
-      out.addAll(metatile.save());
-    }
-
-    out.add(Globals.metatiles.length);
-
-    for (Metatile metatile in Globals.metatiles) {
-      out.addAll(metatile.save());
-    }
-
-    for (Palette palette in Globals.palettes) {
-      out.addAll(palette.save().toList());
-    }
-    for (Tile tile in Globals.tiles) {
-      out.addAll(tile.save().toList());
-    }
-
     return out;
+  }
+
+  static List<String> _mapSaveables(String section, List<Saveable> items) {
+    List<String> out = [section.toBase64()];
+    for (Saveable i in items) {
+      out.add(i.save());
+    }
+    return out;
+  }
+
+  static List<String> createSaveData(File saveLocation) {
+    List<String> out = [];
+
+    out.add(_saveFileHeader.toBase64());
+
+    out.addAll(_mapExportSettings(exportBoolsLine, Exports.exportFlags));
+    out.addAll(_mapExportSettings(exportIntsLine, Exports.exportRanges));
+    out.addAll(_mapExportSettings(exportStringsLine, Exports.exportStrings));
+
+    out.addAll(_mapSaveables(tilesLine, Globals.tiles));
+    out.addAll(_mapSaveables(palettesLine, Globals.palettes));
+    out.addAll(_mapSaveables(metaspriteLine, Globals.metasprites));
+    out.addAll(_mapSaveables(metatilesLine, Globals.metatiles));
+
+    out.add(tilePaletteLine.toBase64());
+
+    List<String> palettes = [];
+    for (int p in Globals.tilePalettes) {
+      palettes.add(p.toByteString(1));
+    }
+    out.add(palettes.join(",").toBase64());
+
+    return out.map((e) => "$e\n").toList();
   }
 
   static bool _flag(String key) => Exports.exportFlags[key] ?? false;

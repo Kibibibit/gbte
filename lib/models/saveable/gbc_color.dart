@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:gbte/helpers/map_range.dart';
 import 'package:gbte/models/saveable/exportable.dart';
@@ -27,34 +25,16 @@ class GBCColor extends Exportable {
   }
   
   @override
-  void load(Uint8List data) {
+  void load(String data) {
 
-    int byteString = 0;
-
-    for (int i = 0; i < data.length; i++) {
-      byteString = (byteString << 8) + data[i];
-    }
-    r = (byteString >> 10) & 31;
-    g = (byteString >> 5) & 31;
-    b = (byteString) & 31;
-
+    List<String> d = data.replaceAll("{", "").replaceAll("}", "").split(".");
+    r = int.parse(d[0]);
+    g = int.parse(d[1]);
+    b = int.parse(d[2]);
   }
   
   @override
-  Uint8List save() {
-    int data = (r << 10) + (g << 5) + b;
-
-    List<int> out = [];
-    
-    for (int i = 0; i < 2; i++) {
-      int mask = (255 << 8*(1-i));
-      int masked = data&mask;
-      int shift = masked >> 8*(1-i);
-      out.add(shift);
-    }
-
-    return Uint8List.fromList(out);
-  }
+  String save() => "{$r.$g.$b}";
   
   @override
   List<int> export() {

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
@@ -42,9 +41,10 @@ class _MetatilePageState extends State<MetatilePage> {
       widget.metatiles.isNotEmpty ? widget.metatiles[selectedMetatile] : null;
 
   void createMetatile() {
+    Events.triggerUnsaved();
     int offset = widget.isMetatiles ? Constants.tileBankSize * 2 : 0;
     if (widget.metatiles.isNotEmpty) {
-      offset = widget.metatiles.last.tiles.last+1;
+      offset = widget.metatiles.last.tiles.last + 1;
     }
 
     widget.metatiles
@@ -55,6 +55,7 @@ class _MetatilePageState extends State<MetatilePage> {
   }
 
   void deleteMetatile(int index) {
+    Events.triggerUnsaved();
     setState(() {
       widget.metatiles.removeAt(index);
       while (selectedMetatile >= widget.metatiles.length &&
@@ -101,6 +102,7 @@ class _MetatilePageState extends State<MetatilePage> {
     setState(() {
       metatile!.tiles[index] = tile;
     });
+    Events.triggerUnsaved();
   }
 
   void onSizeChange(int size) {
@@ -113,13 +115,14 @@ class _MetatilePageState extends State<MetatilePage> {
         metatile!.tiles.removeLast();
       }
     });
+    Events.triggerUnsaved();
   }
 
   void onPaste() {
     if (Globals.copyBuffer == null) return;
     if (widget.metatiles.isEmpty) createMetatile();
 
-    List<Uint8List> previousTiles = metatile!.toBytes();
+    List<String> previousTiles = metatile!.toBytes();
 
     Matrix2D matrix = metatile!.createMatrix();
 
@@ -150,7 +153,7 @@ class _MetatilePageState extends State<MetatilePage> {
 
   void onCut() {
     if (widget.metatiles.isNotEmpty) {
-      List<Uint8List> previousTiles = metatile!.toBytes();
+      List<String> previousTiles = metatile!.toBytes();
 
       onCopy();
       setState(() {

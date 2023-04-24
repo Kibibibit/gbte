@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        title: 'GBTE',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
@@ -23,8 +24,16 @@ class MyApp extends StatelessWidget {
         home: RootPage(
           pages: {
             Constants.tilePage: const TilePage(),
-            Constants.metaspritePage : MetatilePage(page: Constants.metaspritePage, metatiles: Globals.metasprites, isMetatiles: false,),
-            Constants.metatilePage : MetatilePage(page: Constants.metatilePage, metatiles: Globals.metatiles, isMetatiles: true,),
+            Constants.metaspritePage: MetatilePage(
+              page: Constants.metaspritePage,
+              metatiles: Globals.metasprites,
+              isMetatiles: false,
+            ),
+            Constants.metatilePage: MetatilePage(
+              page: Constants.metatilePage,
+              metatiles: Globals.metatiles,
+              isMetatiles: true,
+            ),
           },
         ));
   }

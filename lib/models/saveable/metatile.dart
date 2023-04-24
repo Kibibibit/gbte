@@ -1,7 +1,8 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:gbte/globals/globals.dart';
+import 'package:gbte/helpers/extensions/base64_string.dart';
+import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/models/data_structures/matrix2d.dart';
 import 'package:gbte/models/saveable/saveable.dart';
 import 'package:gbte/models/saveable/tile.dart';
@@ -54,33 +55,32 @@ class Metatile extends Saveable {
 
   }
 
-  List<Uint8List> toBytes() {
+  List<String> toBytes() {
     return tiles.map((e) => Globals.tiles[e].save()).toList();
   }
 
   @override
-  void load(Uint8List data) {
-    List<int> bytes = data.toList();
+  void load(String data) {
+    List<String> decoded = data.split(",");
+    String header = decoded.removeAt(0);
+
+    assert(header == Saveable.metatileHeader);
+
+    size = decoded.removeAt(0).fromByteString();
+
     tiles = [];
-    size = bytes.removeAt(0);
-    int elements = size * size;
-    for (int i = 0; i < elements; i++) {
-      int upper = bytes.removeAt(0);
-      int lower = bytes.removeAt(0);
-      int tile = (upper << 8) + lower;
-      tiles.add(tile);
+    for (String t in decoded) {
+      tiles.add(t.fromByteString());
     }
+
   }
 
   @override
-  Uint8List save() {
-    List<int> out = [size];
+  String save() {
+    List<String> out = [Saveable.metatileHeader, size.toByteString(1)];
     for (int tile in tiles) {
-      int upper = (tile & 0xF0) >> 8;
-      int lower = tile & 0x0F;
-      out.add(upper);
-      out.add(lower);
+      out.add(tile.toByteString(2));
     }
-    return Uint8List.fromList(out);
+    return out.join(",").toBase64();
   }
 }

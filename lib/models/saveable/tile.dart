@@ -1,5 +1,5 @@
-
-import 'dart:typed_data';
+import 'package:gbte/helpers/extensions/base64_string.dart';
+import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/models/data_structures/matrix2d.dart';
 import 'package:gbte/models/saveable/exportable.dart';
 import 'package:gbte/models/saveable/saveable.dart';
@@ -27,35 +27,27 @@ class Tile extends Exportable {
   Matrix2D get matrix => _data.copy();
 
   @override
-  void load(Uint8List data) {
-    List<int> bytes = data.toList();
-    int header = bytes.removeAt(0);
+  void load(String data) {
+
+    List<String> dataList = data.split(",");
+    String header = dataList.removeAt(0);
 
     assert(header == Saveable.tileHeader, "Tried to load a tile with a non-tile value");
 
-    for (int i = 0; i < bytes.length; i++) {
-      int byte = bytes[i];
-      for (int j = 0; j < 4; j++) {
-        _data.setI((i*4)+j,(byte >> (6-(j*2))) & 3);
-      }
-
+    for (int i = 0; i < dataList.length; i++) {
+      int byte = dataList[i].fromByteString();
+      _data.setI(i, byte);
     }
-
   }
 
   @override
-  Uint8List save() {
-    List<int> out = [];
+  String save() {
+    List<String> out = [];
     out.add(Saveable.tileHeader);
-
-    for (int i = 0; i < 16; i++) {
-      int p = 0;
-      for (int j = 0; j < 4; j++) {
-        p = (p << 2) + _data.getI((i * 4) + j);
-      }
-      out.add(p);
-    }
-    return Uint8List.fromList(out);
+    for (int i = 0; i < Tile.size*Tile.size; i++){
+      out.add(_data.getI(i).toByteString(1));
+    } 
+    return out.join(",").toBase64();
   }
 
   static Tile fromMatrix(Matrix2D matrix) {

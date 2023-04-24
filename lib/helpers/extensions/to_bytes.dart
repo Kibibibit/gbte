@@ -15,3 +15,19 @@ extension ToBytes on int {
     return "0x$radix";
   }
 }
+
+extension FromBytes on String {
+
+  int fromByteString() {
+
+    if (!startsWith("0x")) {
+      return -1;
+    }
+
+    String out = replaceFirst("0x", "");
+
+    return int.parse(out,radix:16);
+
+  }
+
+}

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gbte/components/int_editing_controller.dart';
@@ -160,7 +159,7 @@ class _TilePageState extends State<TilePage> {
   }
 
   void onCut() {
-    Uint8List prev = Globals.tiles[selectedTile].save();
+    String prev = Globals.tiles[selectedTile].save();
     onCopy();
     setState(() {
       Globals.tiles[selectedTile] = Tile();
@@ -174,7 +173,7 @@ class _TilePageState extends State<TilePage> {
 
   void onPaste() {
     if (Globals.copyBuffer == null) return;
-    Uint8List prev = Globals.tiles[selectedTile].save();
+    String prev = Globals.tiles[selectedTile].save();
     setState(() {
       for (int y = 0; y < Tile.size; y++) {
         for (int x = 0; x < Tile.size; x++) {
