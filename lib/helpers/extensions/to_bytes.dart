@@ -19,12 +19,10 @@ extension ToBytes on int {
 extension FromBytes on String {
 
   int fromByteString() {
-
-    if (!startsWith("0x")) {
-      return -1;
-    }
+    assert(startsWith("0x"), "Byte string missing radix!");
 
     String out = replaceFirst("0x", "");
+
 
     return int.parse(out,radix:16);
 

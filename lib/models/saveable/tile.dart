@@ -46,7 +46,7 @@ class Tile extends Exportable {
     out.add(Saveable.tileHeader);
     for (int i = 0; i < Tile.size*Tile.size; i++){
       out.add(_data.getI(i).toByteString(1));
-    } 
+    }
     return out.join(",").toBase64();
   }
 

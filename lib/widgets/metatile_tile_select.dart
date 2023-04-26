@@ -56,7 +56,9 @@ class _MetatileTileSelectState extends State<MetatileTileSelect> {
     });
   }
 
-  String label(int index) => (index - (Constants.tileBankSize*widget.tileBank)).toByteString(1);
+  int _index(int index) => (widget.tileBank*Constants.tileBankSize) + index;
+
+  String label(int index) => index.toByteString(1);
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,7 @@ class _MetatileTileSelectState extends State<MetatileTileSelect> {
                 child: Stack(
                   children: [
                     TileDisplay(
-                        tiles: [metatile.tiles[index]],
+                        tiles: [_index(metatile.tiles[index])],
                         metatileSize: 1,
                         primaryColor: 0,
                         secondaryColor: 0),

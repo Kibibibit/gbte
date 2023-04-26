@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:gbte/constants/constants.dart';
 import 'package:gbte/constants/tile_bank.dart';
@@ -40,6 +39,10 @@ class _MetatilePageState extends State<MetatilePage> {
   Metatile? get metatile =>
       widget.metatiles.isNotEmpty ? widget.metatiles[selectedMetatile] : null;
 
+  int _index(int index) {
+    return (widget.isMetatiles ? Constants.tileBankSize * 2 : 0) + index; 
+  }
+
   void createMetatile() {
     Events.triggerUnsaved();
     int offset = widget.isMetatiles ? Constants.tileBankSize * 2 : 0;
@@ -79,6 +82,7 @@ class _MetatilePageState extends State<MetatilePage> {
     selectedMetatile = 0;
     hoveredTile = 0;
   }
+
 
   void selectColorPrimary(int color) {
     setState(() {
@@ -193,11 +197,11 @@ class _MetatilePageState extends State<MetatilePage> {
                 Row(
                   children: [
                     TileEditButtons(
-                      tiles: metatile!.tiles,
+                      tiles: metatile!.tiles.map((e) => _index(e)).toList(),
                       metatileSize: metatile!.size,
                     ),
                     TileDisplay(
-                      tiles: metatile!.tiles,
+                      tiles: metatile!.tiles.map((e) => _index(e)).toList(),
                       metatileSize: metatile!.size,
                       primaryColor: primaryColor,
                       secondaryColor: secondaryColor,
@@ -252,6 +256,7 @@ class _MetatilePageState extends State<MetatilePage> {
                           metatiles: widget.metatiles,
                           selected: selectedMetatile,
                           onChange: selectTile,
+                          isMetatiles: widget.isMetatiles,
                         ),
                       ),
                     ],

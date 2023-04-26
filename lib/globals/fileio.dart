@@ -63,10 +63,8 @@ abstract class FileIO {
       saveLocation.deleteSync();
     }
     saveLocation.createSync();
-    List<String> data = createSaveData(saveLocation);
-    for (String line in data) {
-      saveLocation.writeAsStringSync(line, mode: FileMode.append);
-    }
+    String data = createSaveData(saveLocation);
+    saveLocation.writeAsStringSync(data);
     Globals.saved = true;
   }
 
@@ -254,7 +252,7 @@ abstract class FileIO {
     return out;
   }
 
-  static List<String> createSaveData(File saveLocation) {
+  static String createSaveData(File saveLocation) {
     List<String> out = [];
 
     out.add(_saveFileHeader.toBase64());
@@ -276,7 +274,7 @@ abstract class FileIO {
     }
     out.add(palettes.join(",").toBase64());
 
-    return out.map((e) => "$e\n").toList();
+    return out.join("\n");
   }
 
   static bool _flag(String key) => Exports.exportFlags[key] ?? false;

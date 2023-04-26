@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbte/constants/constants.dart';
 import 'package:gbte/helpers/extensions/to_bytes.dart';
 import 'package:gbte/models/saveable/metatile.dart';
 import 'package:gbte/widgets/tile_display.dart';
@@ -6,10 +7,11 @@ import 'package:gbte/widgets/tile_display.dart';
 class MetatileSelect extends StatelessWidget {
   final List<Metatile> metatiles;
   final int selected;
+  final bool isMetatiles;
   final void Function(int index) onChange;
 
   const MetatileSelect(
-      {super.key, required this.selected, required this.onChange, required this.metatiles});
+      {super.key, required this.selected, required this.onChange, required this.metatiles, required this.isMetatiles});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class MetatileSelect extends StatelessWidget {
                   decoration: BoxDecoration(border: Border.all()),
                   height: 80,
                   child: TileDisplay(
-                    tiles: metatiles[index].tiles,
+                    tiles: isMetatiles ? metatiles[index].tiles.map((e) => e+(Constants.tileBankSize*2)).toList() : metatiles[index].tiles,
                     metatileSize: metatiles[index].size,
                     border: false,
                     primaryColor: 2,
