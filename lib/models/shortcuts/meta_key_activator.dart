@@ -17,8 +17,9 @@ class MetaKeyActivator extends ShortcutActivator {
 
   void _init() {
     _goodKeys = removeNullElements([metaKey, key1, key2, key3]);
-    _badMetaKeys = _metaKeys.where((element) => element != metaKey && !_goodKeys.contains(element)).toList();
-    
+    _badMetaKeys = _metaKeys
+        .where((element) => element != metaKey && !_goodKeys.contains(element))
+        .toList();
   }
 
   static final List<LogicalKeyboardKey> _metaKeys = [
@@ -34,9 +35,11 @@ class MetaKeyActivator extends ShortcutActivator {
   }
 
   @override
-  bool accepts(RawKeyEvent event, RawKeyboard state) {
-    return (_goodKeys.every((element) => event.isKeyPressed(element)) &&
-        !_badMetaKeys.any((element) => event.isKeyPressed(element)));
+  bool accepts(KeyEvent event, HardwareKeyboard state) {
+    return (_goodKeys.every(
+            (element) => state.logicalKeysPressed.contains(event.logicalKey)) &&
+        !_badMetaKeys.any(
+            (element) => state.logicalKeysPressed.contains(event.logicalKey)));
   }
 
   @override
